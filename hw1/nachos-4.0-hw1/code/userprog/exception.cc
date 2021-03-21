@@ -119,6 +119,18 @@ void ExceptionHandler(ExceptionType which)
 			return;
 			ASSERTNOTREACHED();
 			break;
+
+		case SC_Close:
+			// DEBUG(dbgSys, "Start Open.\n");
+			val = kernel->machine->ReadRegister(4);
+			{
+				char *filename = &(kernel->machine->mainMemory[val]);
+				status = kernel->fileSystem->OpenAFile(filename);
+				kernel->machine->WriteRegister(2, (int)status);
+			}
+			return;
+			ASSERTNOTREACHED();
+			break;
 			//TODO>
 
 		default:

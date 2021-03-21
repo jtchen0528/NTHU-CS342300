@@ -83,7 +83,13 @@ public:
 
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
-	int CloseFile();
+	int CloseFile() {
+		if (Close(filePtr) == NULL) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
 
 	//TODO>
 };
