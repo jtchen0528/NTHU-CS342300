@@ -68,7 +68,7 @@ class FileSystem {
 	
 	OpenFile* filePtr;	//you need to use this filePtr to manage the current file
 
-	int OpenAFile(char *name);
+	// int OpenAFile(char *name);
 	int OpenAFile(char *name) {
 		// if (filePtr->Open(name) == NULL) return -1;
 		// else return 1;
