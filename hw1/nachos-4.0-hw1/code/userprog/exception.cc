@@ -53,6 +53,7 @@ void ExceptionHandler(ExceptionType which)
 	int type = kernel->machine->ReadRegister(2);
 	int val, status;
 
+
 	switch (which)
 	{
 	case SyscallException:
@@ -123,6 +124,7 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Write:
 			// DEBUG(dbgSys, "Start Open.\n");
 			val = kernel->machine->ReadRegister(4);
+
 			{
 				char *buffer = &(kernel->machine->mainMemory[val]);
 				int size = kernel->machine->ReadRegister(5);
@@ -134,12 +136,13 @@ void ExceptionHandler(ExceptionType which)
 			break;
 
 		case SC_Read:
-			// DEBUG(dbgSys, "Start Open.\n");
+			// DEBUG(dbgSys, "Start Open.\n");\
+
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *buffer = &(kernel->machine->mainMemory[val]);
 				int size = kernel->machine->ReadRegister(5);
-				status = kernel->fileSystem->WriteFile(buffer, size);
+				status = kernel->fileSystem->ReadFile(buffer, size);
 				kernel->machine->WriteRegister(2, (int)status);
 			}
 			return;
