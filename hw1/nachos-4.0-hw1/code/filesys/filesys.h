@@ -68,14 +68,16 @@ class FileSystem {
 	
 	OpenFile* filePtr;	//you need to use this filePtr to manage the current file
 
-	// int OpenAFile(char *name);
-	// // int OpenAFile(char *name) {
-	// // 	if (filePtr->Open(name) == NULL) return -1;
-	// // 	else return 1;
-	// // }
-	// int WriteFile(char *buffer, int size);
-	// int ReadFile(char *buffer, int size);
-	// int CloseFile();
+	int OpenAFile(char *name);
+	int OpenAFile(char *name) {
+		// if (filePtr->Open(name) == NULL) return -1;
+		// else return 1;
+		cout << filePtr << endl;
+		return 1;
+	}
+	int WriteFile(char *buffer, int size);
+	int ReadFile(char *buffer, int size);
+	int CloseFile();
 	//TODO>
 };
 
