@@ -87,7 +87,9 @@ public:
 
 	int CloseFile() {
 		cout << "HI Hi I Am CLOSEFILE" << endl;
+		cout << "FileID: " << filePtr->getFile() << endl;
 		Close(filePtr->getFile());
+		cout << "FileClosed" << endl;
 		return 1;
 	}
 
