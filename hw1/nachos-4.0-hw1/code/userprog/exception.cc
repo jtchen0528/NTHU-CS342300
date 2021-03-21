@@ -94,6 +94,7 @@ ExceptionHandler(ExceptionType which)
 		}
 
 		case SC_Create:
+			DEBUG(dbgSys, "Start Create.\n");
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *filename = &(kernel->machine->mainMemory[val]);
@@ -106,6 +107,7 @@ ExceptionHandler(ExceptionType which)
 		//<TODO
 		
 		case SC_Open:
+			DEBUG(dbgSys, "Start Open.\n");
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *filename = &(kernel->machine->mainMemory[val]);
