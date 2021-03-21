@@ -70,7 +70,7 @@ class FileSystem {
 
 	// int OpenAFile(char *name);
 	int OpenAFile(char *name) {
-		filePtr = new OpenFile(name);
+		filePtr = Open(name);
 		if (filePtr == NULL) return -1;
 		else return 1;
 	}
