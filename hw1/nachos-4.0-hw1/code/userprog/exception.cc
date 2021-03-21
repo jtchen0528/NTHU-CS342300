@@ -109,7 +109,7 @@ ExceptionHandler(ExceptionType which)
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *filename = &(kernel->machine->mainMemory[val]);
-				status = kernel->fileSystem->Create(filename);	
+				status = kernel->fileSystem->OpenAFile(filename);	
 				kernel->machine->WriteRegister(2, (int)status);
 			}
 			return;

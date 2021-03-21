@@ -69,11 +69,11 @@ class FileSystem {
 	OpenFile* filePtr;	//you need to use this filePtr to manage the current file
 
 	int OpenAFile(char *name) {
-		filePtr = Open(name);
+		// filePtr = Open(name);
 		if (filePtr == NULL) return -1;
 		else return 1;
 	}
-	
+
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
 	int CloseFile();
