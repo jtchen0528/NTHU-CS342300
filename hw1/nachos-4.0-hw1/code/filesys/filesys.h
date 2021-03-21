@@ -86,7 +86,7 @@ public:
 
 	int CloseFile() {
 		cout << "HI Hi I Am CLOSEFILE" << endl;
-		Close(filePtr->getFile());
+		// Close(filePtr->getFile());
 		return 1;
 	}
 
