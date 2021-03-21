@@ -1,6 +1,6 @@
 #include "syscall.h"
 
-int main(void)
+main(void)
 {
 	// int result = Create("file1");
 	// if (result != 1) Msg("Creating file failed!");
