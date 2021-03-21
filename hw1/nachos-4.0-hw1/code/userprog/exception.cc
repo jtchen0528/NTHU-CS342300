@@ -122,11 +122,8 @@ void ExceptionHandler(ExceptionType which)
 
 		case SC_Close:
 			// DEBUG(dbgSys, "Start Open.\n");
-			val = kernel->machine->ReadRegister(4);
-			{
-				status = kernel->fileSystem->CloseFile();
-				kernel->machine->WriteRegister(2, (int)status);
-			}
+			status = kernel->fileSystem->CloseFile();
+			kernel->machine->WriteRegister(2, (int)status);
 			return;
 			ASSERTNOTREACHED();
 			break;
