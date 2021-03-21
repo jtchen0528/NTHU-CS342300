@@ -64,15 +64,20 @@ class FileSystem {
 
 	
 	//<TODO
-	/*The OpenAFile function is used for kernel open system call
+	/* The OpenAFile function is used for kernel open system call */
 	
 	OpenFile* filePtr;	//you need to use this filePtr to manage the current file
 
-	int OpenAFile(char *name);
+	int OpenAFile(char *name) {
+		filePtr = Open(name);
+		if (filePtr == NULL) return -1;
+		else return 1;
+	}
+	
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
 	int CloseFile();
-	*/
+	
 	//TODO>
 };
 
