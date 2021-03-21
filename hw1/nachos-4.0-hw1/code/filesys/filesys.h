@@ -74,6 +74,7 @@ public:
 
 	int OpenAFile(char *name)
 	{
+		cout << "test" << endl;
 		filePtr = Open(name);
 		if (filePtr == NULL)
 			return -1;
