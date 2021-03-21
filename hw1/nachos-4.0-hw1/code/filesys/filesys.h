@@ -89,7 +89,14 @@ public:
 			return -1;
 		}
 	}
-	int ReadFile(char *buffer, int size);
+	int ReadFile(char *buffer, int size) {
+		int numsRead = filePtr->Read(buffer, size);
+		if (numsRead >= 0) {
+			return numsRead;
+		} else {
+			return -1;
+		}
+	}
 
 	int CloseFile() {
 		Close(filePtr->getFile());

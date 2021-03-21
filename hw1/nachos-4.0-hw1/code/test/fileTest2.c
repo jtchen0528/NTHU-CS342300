@@ -19,18 +19,18 @@ int main(void)
 	if (result != 1) Msg("Closing file failed!");
 
 
-	// result = Open("file1");
-	// if(result < 0) {
-	// 	Msg("Opening file failed!");
-	// }
-	// count = Read(read, size);
-	// if (count != size) Msg("Reading file failed!");
+	result = Open("file1");
+	if(result < 0) {
+		Msg("Opening file failed!");
+	}
+	count = Read(read, size);
+	if (count != size) Msg("Reading file failed!");
 	
-	// result = Close();
-	// if (result != 1) Msg("Closing file failed!");
+	result = Close();
+	if (result != 1) Msg("Closing file failed!");
 	
-	// for (i = 0; i < size; ++i) {
-	// 	if (read[i] != test[i]) Msg("Reading wrong result:'(");
-	// }
+	for (i = 0; i < size; ++i) {
+		if (read[i] != test[i]) Msg("Reading wrong result:'(");
+	}
 	Msg("=====Congratulations!!!=====");
 }
