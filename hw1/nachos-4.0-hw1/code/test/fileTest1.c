@@ -2,8 +2,8 @@
 
 int main(void)
 {
-	int result = Create("file1");
-	if (result != 1) Msg("Creating file failed!");
+	// int result = Create("file1");
+	// if (result != 1) Msg("Creating file failed!");
 	
 	// result = Open("file1");
 	// if(result < 0) {
