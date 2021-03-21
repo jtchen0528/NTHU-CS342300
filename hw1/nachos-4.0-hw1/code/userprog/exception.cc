@@ -125,8 +125,7 @@ void ExceptionHandler(ExceptionType which)
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *buffer = &(kernel->machine->mainMemory[val]);
-				val = kernel->machine->ReadRegister(5);
-				int size = &(kernel->machine->mainMemory[val]);
+				int size = kernel->machine->ReadRegister(5);
 				status = kernel->fileSystem->WriteFile(buffer, size);
 				kernel->machine->WriteRegister(2, (int)status);
 			}
