@@ -555,7 +555,6 @@ Machine::OneInstruction(Instruction *instr)
 	break;
     	
       case OP_SYSCALL:
-	  cout << "SYSCALL" << endl;
  	RaiseException(SyscallException, 0);
 //	return; 
 	break;
