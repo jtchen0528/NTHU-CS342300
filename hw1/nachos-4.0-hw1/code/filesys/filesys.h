@@ -86,11 +86,8 @@ public:
 
 	int CloseFile() {
 		cout << "HI Hi I Am CLOSEFILE" << endl;
-		if (Close(filePtr->getFile()) >= 0) {
-			return 1;
-		} else {
-			return -1;
-		}
+		Close(filePtr->getFile());
+		return 1;
 	}
 
 	//TODO>
