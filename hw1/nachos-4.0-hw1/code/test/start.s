@@ -98,6 +98,7 @@ Open:
 	syscall
 	j	$31
 	.end Open
+
 	.globl Read
 	.ent	Read
 Read:
@@ -105,6 +106,7 @@ Read:
 	syscall
 	j	$31
 	.end Read
+
 	.globl Write
 	.ent	Write
 Write:
@@ -112,6 +114,7 @@ Write:
 	syscall
 	j	$31
 	.end Write
+
 	.globl Close
 	.ent	Close
 Close:

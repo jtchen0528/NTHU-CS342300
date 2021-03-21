@@ -83,7 +83,9 @@ public:
 
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
+
 	int CloseFile() {
+		cout << "HI Hi I Am CLOSEFILE" << endl;
 		Close(filePtr->getFile());
 		return 1;
 	}
