@@ -125,7 +125,7 @@ void ExceptionHandler(ExceptionType which)
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *filename = &(kernel->machine->mainMemory[val]);
-				status = kernel->fileSystem->CloseFile(filename);
+				status = kernel->fileSystem->CloseFile();
 				kernel->machine->WriteRegister(2, (int)status);
 			}
 			return;
