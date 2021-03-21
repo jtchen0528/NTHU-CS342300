@@ -12,11 +12,11 @@ int main(void)
 		Msg("Opening file failed!");
 	}
 
-	// count = Write(test, size);
-	// if (count != size) Msg("Writing file failed!");
+	count = Write(test, size);
+	if (count != size) Msg("Writing file failed!");
 
-	// result = Close();
-	// if (result != 1) Msg("Closing file failed!");
+	result = Close();
+	if (result != 1) Msg("Closing file failed!");
 
 
 	// result = Open("file1");

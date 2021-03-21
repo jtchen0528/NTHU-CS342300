@@ -81,7 +81,14 @@ public:
 			return 1;
 	}
 
-	int WriteFile(char *buffer, int size);
+	int WriteFile(char *buffer, int size) {
+		int numsWritten = filePtr->Write(buffer, size);
+		if (numsWritten >= 0) {
+			return numsWritten;
+		} else {
+			return -1;
+		}
+	}
 	int ReadFile(char *buffer, int size);
 
 	int CloseFile() {

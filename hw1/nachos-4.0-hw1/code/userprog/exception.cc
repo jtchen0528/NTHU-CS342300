@@ -120,6 +120,20 @@ void ExceptionHandler(ExceptionType which)
 			ASSERTNOTREACHED();
 			break;
 
+		case SC_Write:
+			// DEBUG(dbgSys, "Start Open.\n");
+			val = kernel->machine->ReadRegister(4);
+			{
+				char *buffer = &(kernel->machine->mainMemory[val]);
+				val = kernel->machine->ReadRegister(5);
+				int size = &(kernel->machine->mainMemory[val]);
+				status = kernel->fileSystem->WriteFile(buffer, size);
+				kernel->machine->WriteRegister(2, (int)status);
+			}
+			return;
+			ASSERTNOTREACHED();
+			break;
+
 		case SC_Close:
 			// DEBUG(dbgSys, "Start Open.\n");
 			status = kernel->fileSystem->CloseFile();
