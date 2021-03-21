@@ -104,6 +104,7 @@ ExceptionHandler(ExceptionType which)
 			ASSERTNOTREACHED();
 			break;
 		//<TODO
+		
 		case SC_Open:
 			val = kernel->machine->ReadRegister(4);
 			{
