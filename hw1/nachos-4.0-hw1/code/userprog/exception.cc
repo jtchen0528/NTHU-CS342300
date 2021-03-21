@@ -124,7 +124,6 @@ void ExceptionHandler(ExceptionType which)
 			// DEBUG(dbgSys, "Start Open.\n");
 			val = kernel->machine->ReadRegister(4);
 			{
-				char *filename = &(kernel->machine->mainMemory[val]);
 				status = kernel->fileSystem->CloseFile();
 				kernel->machine->WriteRegister(2, (int)status);
 			}
