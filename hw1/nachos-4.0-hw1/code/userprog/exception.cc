@@ -104,7 +104,16 @@ ExceptionHandler(ExceptionType which)
 			ASSERTNOTREACHED();
 			break;
 		//<TODO
-		
+		case SC_Open:
+			val = kernel->machine->ReadRegister(4);
+			{
+				char *filename = &(kernel->machine->mainMemory[val]);
+				status = kernel->fileSystem->OpenAFile(filename);	
+				kernel->machine->WriteRegister(2, (int)status);
+			}
+			return;
+			ASSERTNOTREACHED();
+			break;
 		//TODO>
 		
 		default:
