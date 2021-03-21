@@ -70,10 +70,9 @@ class FileSystem {
 
 	// int OpenAFile(char *name);
 	int OpenAFile(char *name) {
-		// if (filePtr->Open(name) == NULL) return -1;
-		// else return 1;
-		cout << filePtr << endl;
-		return 1;
+		filePtr = new OpenFile(name);
+		if (filePtr == NULL) return -1;
+		else return 1;
 	}
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
