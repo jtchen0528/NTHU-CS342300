@@ -10,8 +10,8 @@ main(void)
 		Msg("Opening file failed!");
 	}
     
-    // result = Close();
-	// if (result != 1) Msg("Closing file failed!");
+    result = Close();
+	if (result != 1) Msg("Closing file failed!");
 	
 	Msg("Success :)");
 }
