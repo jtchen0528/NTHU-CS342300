@@ -74,7 +74,6 @@ public:
 
 	int OpenAFile(char *name)
 	{
-		cout << "test" << endl;
 		filePtr = Open(name);
 		if (filePtr == NULL)
 			return -1;
@@ -86,10 +85,7 @@ public:
 	int ReadFile(char *buffer, int size);
 
 	int CloseFile() {
-		cout << "HI Hi I Am CLOSEFILE" << endl;
-		cout << "FileID: " << filePtr->getFile() << endl;
 		Close(filePtr->getFile());
-		cout << "FileClosed" << endl;
 		return 1;
 	}
 

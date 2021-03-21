@@ -123,6 +123,7 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Close:
 			// DEBUG(dbgSys, "Start Open.\n");
 			status = kernel->fileSystem->CloseFile();
+			kernel->machine->WriteRegister(2, (int)status);
 			return;
 			ASSERTNOTREACHED();
 			break;
