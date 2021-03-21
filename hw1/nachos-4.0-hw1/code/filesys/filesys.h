@@ -84,6 +84,7 @@ public:
 	int WriteFile(char *buffer, int size) {
 		int numsWritten = filePtr->Write(buffer, size);
 		if (numsWritten >= 0) {
+			cout << numsWritten << endl;
 			return numsWritten;
 		} else {
 			return -1;
@@ -92,6 +93,7 @@ public:
 	int ReadFile(char *buffer, int size) {
 		int numsRead = filePtr->Read(buffer, size);
 		if (numsRead >= 0) {
+			cout << numsRead << endl;
 			return numsRead;
 		} else {
 			return -1;
