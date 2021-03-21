@@ -30,7 +30,6 @@ int main(void)
 	if (result != 1) Msg("Closing file failed!");
 	
 	for (i = 0; i < size; ++i) {
-		Msg(read[i]);
 		Msg(test[i]);
 		// if (read[i] != test[i]) Msg("Reading wrong result:'(");
 	}
