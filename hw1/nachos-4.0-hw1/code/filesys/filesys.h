@@ -84,7 +84,7 @@ public:
 	int WriteFile(char *buffer, int size);
 	int ReadFile(char *buffer, int size);
 	int CloseFile() {
-		Close(filePtr.getFile());
+		Close(filePtr->getFile());
 		return 1;
 	}
 
