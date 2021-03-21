@@ -81,26 +81,35 @@ public:
 			return 1;
 	}
 
-	int WriteFile(char *buffer, int size) {
+	int WriteFile(char *buffer, int size)
+	{
 		int numsWritten = filePtr->Write(buffer, size);
-		if (numsWritten >= 0) {
+		if (numsWritten >= 0)
+		{
 			cout << numsWritten << endl;
 			return numsWritten;
-		} else {
+		}
+		else
+		{
 			return -1;
 		}
 	}
-	int ReadFile(char *buffer, int size) {
+	int ReadFile(char *buffer, int size)
+	{
 		int numsRead = filePtr->Read(buffer, size);
-		if (numsRead >= 0) {
+		if (numsRead >= 0)
+		{
 			cout << numsRead << endl;
 			return numsRead;
-		} else {
+		}
+		else
+		{
 			return -1;
 		}
 	}
 
-	int CloseFile() {
+	int CloseFile()
+	{
 		Close(filePtr->getFile());
 		return 1;
 	}
