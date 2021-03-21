@@ -31,6 +31,8 @@ int main(void)
 	
 	for (i = 0; i < size; ++i) {
 		if (read[i] != test[i]) Msg("Reading wrong result:'(");
+		Msg(read[i]);
+		Msg(test[i]);
 	}
 	Msg("=====Congratulations!!!=====");
 }
