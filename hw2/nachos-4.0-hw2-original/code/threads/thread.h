@@ -114,11 +114,22 @@ class Thread {
     //<TODO>
     // Set & Get the value in Class Thread
     // 1. get ID
+    int getID () { return ID; }
     // 2. set/get Priority
+    void set_Priority (int num) {Priority = num; }
+    int get_Priority () { return Priority; }
     // 3. set/get WaitTime
+    void set_WaitTime (int num) {WaitTime = num; }
+    int get_WaitTime () { return WaitTime; }
     // 4. set/get RemainingBurstTime
+    void set_RemainingBurstTime (int num) {RemainingBurstTime = num; }
+    int get_RemainingBurstTime () { return RemainingBurstTime; }
     // 5. set/get RunTime
+    void set_RunTime (int num) {RunTime = num; }
+    int get_RunTime () { return RunTime; }
     // 6. set/get RRTime
+    void set_RRTime (int num) {RRTime = num; }
+    int get_RRTime () { return RRTime; }
     //<TODO>
 
   private:

@@ -34,6 +34,33 @@
 //<TODO>
 // Declare sorting rule of SortedList for L1 & L2 ReadyQueue
 // Hint: Funtion Type should be "static int"
+static int compareL1(Thread* x, Thread* y)
+{
+//		returns -1 if x < y
+//		returns 0 if x == y
+//		returns 1 if x > y
+    if (x->get_RemainingBurstTime() > y->get_RemainingBurstTime()) {
+        return -1;
+    } else if (x->get_RemainingBurstTime()  ==  y->get_RemainingBurstTime()) {
+        return 0;
+    } else if (x->get_RemainingBurstTime() < y->get_RemainingBurstTime()) {
+        return 1;
+    }
+}
+
+static int compareL2(Thread* x, Thread* y)
+{
+//		returns -1 if x < y
+//		returns 0 if x == y
+//		returns 1 if x > y
+    if (x->getID() > y->getID()) {
+        return -1;
+    } else if (x->getID()  ==  y->getID()) {
+        return 0;
+    } else if (x->getID() < y->getID()) {
+        return 1;
+    }
+}
 //<TODO>
 
 Scheduler::Scheduler()
@@ -42,6 +69,9 @@ Scheduler::Scheduler()
     // readyList = new List<Thread *>; 
     //<TODO>
     // Initialize L1, L2, L3 ReadyQueue
+    L1ReadyQueue = new SortedList<Thread *>(&compareL1); 
+    L2ReadyQueue = new SortedList<Thread *>(&compareL2);
+    L3ReadyQueue = new List<Thread *>;
     //<TODO>
 	toBeDestroyed = NULL;
 } 
@@ -55,6 +85,9 @@ Scheduler::~Scheduler()
 { 
     //<TODO>
     // Remove L1, L2, L3 ReadyQueue
+    delete L1ReadyQueue;
+    delete L2ReadyQueue;
+    delete L3ReadyQueue;
     //<TODO>
     // delete readyList; 
 } 
@@ -75,10 +108,25 @@ Scheduler::ReadyToRun (Thread *thread)
 
     Statistics* stats = kernel->stats;
     //<TODO>
+    int queuelevel = 0;
     // According to priority of Thread, put them into corresponding ReadyQueue.
     // After inserting Thread into ReadyQueue, don't forget to reset some values.
-    // Hint: L1 ReadyQueue is preemptive SRTN(Shortest Remaining Time Next).
+    // Hint: L2 ReadyQueue is preemptive priority.
     // When putting a new thread into L1 ReadyQueue, you need to check whether preemption or not.
+    thread->setStatus(READY);
+    if (thread->get_Priority() >= 0 && thread->get_Priority() <= 49) {
+        L3ReadyQueue->Append(thread);
+        queuelevel = 3;
+    } else if (thread->get_Priority() >= 50 && thread->get_Priority() <= 99) {
+        L2ReadyQueue->Insert(thread);
+        queuelevel = 2;
+    } else if (thread->get_Priority() >= 100 && thread->get_Priority() <= 149) {
+        L1ReadyQueue->Insert(thread);
+        queuelevel = 1;
+    } else {
+        cout << "NOT VALID PRIORITY" << endl;
+    }
+    DEBUG(dbgMLFQ, "[InsertToQueue] Tick ["<< stats->totalTicks << "]: Thread [" << thread->getID() <<"] is inserted into queue L" <<queuelevel);
     //<TODO>
     // readyList->Append(thread);
 }
@@ -103,7 +151,24 @@ Scheduler::FindNextToRun ()
     }*/
 
     //<TODO>
+    Statistics* stats = kernel->stats;
+    Thread* thread;
     // a.k.a. Find Next (Thread in ReadyQueue) to Run
+    if (! L1ReadyQueue->IsEmpty()) {
+        thread = L1ReadyQueue->RemoveFront();
+	DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << thread->getID() <<"] is removed from queue L1");
+        return thread;
+    } else if (! L2ReadyQueue->IsEmpty()) {
+        thread = L2ReadyQueue->RemoveFront();
+	DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << thread->getID() <<"] is removed from queue L2");
+        return thread;
+    } else if (! L3ReadyQueue->IsEmpty()) {
+	thread = L3ReadyQueue->RemoveFront();
+        DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << thread->getID() <<"] is removed from queue L3");
+        return thread;
+    } else {
+        return NULL;
+    }
     //<TODO>
 }
 
@@ -226,10 +291,103 @@ Scheduler::Print()
 // 2. Update WaitTime and priority in Aging situations
 // 3. After aging, Thread may insert to different ReadyQueue
 
+Thread *
+Scheduler::TotalFront ()
+{
+    ASSERT(kernel->interrupt->getLevel() == IntOff);
+    Thread * thread;
+
+    if (! L1ReadyQueue->IsEmpty()) {
+        thread = L1ReadyQueue->Front();
+        return thread;
+    } else if (! L2ReadyQueue->IsEmpty()) {
+        thread = L2ReadyQueue->Front();
+        return thread;
+    } else if (! L3ReadyQueue->IsEmpty()) {
+	thread = L3ReadyQueue->Front();
+        return thread;
+    } else {
+        return NULL;
+    }
+
+    //TODO>
+}
+
 void 
 Scheduler::UpdatePriority()
 {
+    //ListIterator<Thread*> *iter2(L2ReadyQueue);
+    // cout << "UpdatePriority\n";
+    Thread* ReadyThread;
+    ListIterator<Thread *> *iter1 = new ListIterator<Thread *>(L1ReadyQueue);
+    ListIterator<Thread *> *iter2 = new ListIterator<Thread *>(L2ReadyQueue);
+    Statistics* stats = kernel->stats;
 
+    for (; !iter1->IsDone(); iter1->Next()) {
+        ReadyThread = iter1->Item();
+        ReadyThread->set_WaitTime(ReadyThread->get_WaitTime() + 100);
+        if (ReadyThread->get_WaitTime() > 400) {
+            
+            ReadyThread->set_WaitTime(0);
+	    if (ReadyThread->get_Priority() < 140) {
+            
+                DEBUG(dbgMLFQ, "[UpdatePriority] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] changes its priority from ["<<ReadyThread->get_Priority() <<"] to [" << ReadyThread->get_Priority() + 10 << "]");
+                ReadyThread->set_Priority(ReadyThread->get_Priority() + 10);
+                L1ReadyQueue->Remove(ReadyThread);
+                DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is removed from queue L1");
+                L1ReadyQueue->Insert(ReadyThread);
+                DEBUG(dbgMLFQ, "[InsertToQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is inserted into queue L1");
+            }
+        }
+    }
+
+
+    for (; !iter2->IsDone(); iter2->Next()) {
+        ReadyThread = iter2->Item();
+        ReadyThread->set_WaitTime(ReadyThread->get_WaitTime() + 100);
+        if (ReadyThread->get_WaitTime() > 400) {
+            DEBUG(dbgMLFQ, "[UpdatePriority] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] changes its priority from ["<<ReadyThread->get_Priority() <<"] to [" << ReadyThread->get_Priority() + 10 << "]");
+            ReadyThread->set_Priority(ReadyThread->get_Priority() + 10);
+            ReadyThread->set_WaitTime(0);
+            if (ReadyThread->get_Priority() >= 100) {
+                L2ReadyQueue->Remove(ReadyThread);
+                DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is removed from queue L2");
+                L1ReadyQueue->Insert(ReadyThread);
+                DEBUG(dbgMLFQ, "[InsertToQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is inserted into queue L1");
+            }
+            else {
+                L2ReadyQueue->Remove(ReadyThread);
+                DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is removed from queue L2");
+                L2ReadyQueue->Insert(ReadyThread);
+                DEBUG(dbgMLFQ, "[InsertToQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is inserted into queue L2");
+            }
+        }
+    }
+
+   // ListIterator<Thread*> *iter3(L3ReadyQueue);
+   ListIterator<Thread *> *iter3 = new ListIterator<Thread *>(L3ReadyQueue);
+
+    for (; !iter3->IsDone(); iter3->Next()) {
+        ReadyThread = iter3->Item();
+        ReadyThread->set_WaitTime(ReadyThread->get_WaitTime() + 100);
+        if (ReadyThread->get_WaitTime() > 400) {
+            DEBUG(dbgMLFQ, "[UpdatePriority]Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] changes its priority from ["<<ReadyThread->get_Priority() <<"] to [" << ReadyThread->get_Priority() + 10 << "]");
+            ReadyThread->set_Priority(ReadyThread->get_Priority() + 10);
+            ReadyThread->set_WaitTime(0);
+            if (ReadyThread->get_Priority() >= 50) {
+                L3ReadyQueue->Remove(ReadyThread);
+                DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is removed from queue L3");
+                L2ReadyQueue->Insert(ReadyThread);
+                DEBUG(dbgMLFQ, "[InsertToQueue]Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is inserted into queue L2");
+            }
+            else {
+                L3ReadyQueue->Remove(ReadyThread);
+                DEBUG(dbgMLFQ, "[RemoveFromQueue] Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is removed from queue L3");
+                L3ReadyQueue->Append(ReadyThread);
+                DEBUG(dbgMLFQ, "[InsertToQueue]Tick ["<< stats->totalTicks << "]: Thread [" << ReadyThread->getID() <<"] is inserted into queue L3");
+            }
+        }
+    } 
 }
 
 // <TODO>

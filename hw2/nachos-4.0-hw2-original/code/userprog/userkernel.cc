@@ -37,7 +37,9 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 		//<TODO>
         // Get execfile & its priority & burst time from argv, then save them.
 		else if (strcmp(argv[i], "-epb") == 0) {
-
+            execfile[++execfileNum] = argv[++i];
+            threadPriority[execfileNum] = atoi(argv[++i]);
+            threadRemainingBurstTime[execfileNum] = atoi(argv[++i]);
 	    }
 	    //<TODO>
 	    else if (strcmp(argv[i], "-u") == 0) {
@@ -176,6 +178,11 @@ ForkExecute(Thread *t)
     //<TODO>
     // When Thread t goes to Running state in the first time, its file should be loaded & executed.
     // Hint: This function would not be called until Thread t is on running state.
+    if (!t->space->Load(t->getName())) {
+        cout << "inside !Load(FileName)" << endl;
+        return;             // executable not found
+    }
+    t->space->Execute(t->getName());
     //<TODO>
 }
 
@@ -185,6 +192,12 @@ UserProgKernel::InitializeOneThread(char* name, int priority, int burst_time)
     //<TODO>
     // When each execfile comes to Exec function, Kernel helps to create a thread for it.
     // While creating a new thread, thread should be initialized, and then forked.
+    t[threadNum] = new Thread(name, threadNum);
+    t[threadNum]->set_Priority(priority);
+    t[threadNum]->set_RunTime(0);
+    t[threadNum]->set_RRTime(0);
+    t[threadNum]->set_WaitTime(0);
+    t[threadNum]->set_RemainingBurstTime(burst_time);
     t[threadNum]->space = new AddrSpace();
     t[threadNum]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[threadNum]);
     //<TODO>

@@ -217,7 +217,16 @@ Thread::Yield ()
     // 1. Put current_thread in running state to ready state
     // 2. Then, find next thread from ready state to push on running state
     // 3. After resetting some value of current_thread, then context switch
-    kernel->scheduler->Run(nextThread, finishing);
+    Statistics* stats = kernel->stats;
+    nextThread = kernel->scheduler->FindNextToRun();
+    if (nextThread != NULL) {
+        DEBUG(dbgMLFQ, "[ContexSwitch] Tick ["<< stats->totalTicks << "]: Thread [" << nextThread->getID() <<"] is now selected for execution, thread ["<< this->getID() <<"] is replaced, and it has executed [" << this->get_RunTime() << "] ticks");
+	    kernel->currentThread->set_RRTime(0);
+        kernel->scheduler->ReadyToRun(this);
+        nextThread->set_WaitTime(0);
+	    kernel->scheduler->Run(nextThread, FALSE);
+    }
+    // kernel->scheduler->Run(nextThread, finishing);
     //<TODO>
 
     (void) kernel->interrupt->SetLevel(oldLevel);
@@ -262,7 +271,19 @@ Thread::Sleep (bool finishing)
     // , and determine finishing on Scheduler::Run(nextThread, finishing), not here.
     // 1. Update RemainingBurstTime
     // 2. Reset some value of current_thread, then context switch
-    kernel->scheduler->Run(nextThread, finishing);
+    if (nextThread != this) {
+        Statistics* stats = kernel->stats;
+        DEBUG(dbgMLFQ, "[ContexSwitch] Tick ["<< stats->totalTicks << "]: Thread [" << nextThread->getID() <<"] is now selected for execution, thread ["<< this->getID() <<"] is replaced, and it has executed [" << this->get_RunTime() << "] ticks");
+        if (this->get_RunTime() != 0) {
+            DEBUG(dbgMLFQ, "[UpdateRemainingBurstTime] Tick ["<< stats->totalTicks << "]: Thread [" << this->getID() <<"] update remaining burst time, from:[" << this->get_RemainingBurstTime() << "] - [" << this->get_RunTime() << "], to [" << (this->get_RemainingBurstTime() - this->get_RunTime()) << "]");
+            this->set_RemainingBurstTime(this->get_RemainingBurstTime() - this->get_RunTime());
+            this->set_RunTime(0);
+        }
+        nextThread->set_RRTime(0);
+        nextThread->set_WaitTime(0);
+        kernel->scheduler->Run(nextThread, finishing);
+    }
+    // kernel->scheduler->Run(nextThread, finishing);
     //<TODO>
 }
 
