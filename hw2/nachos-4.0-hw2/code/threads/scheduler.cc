@@ -84,6 +84,7 @@ Scheduler::Scheduler()
 Scheduler::~Scheduler()
 { 
     //<TODO>
+    // Remove L1, L2, L3 ReadyQueue
     delete L1ReadyQueue;
     delete L2ReadyQueue;
     delete L3ReadyQueue;
@@ -278,6 +279,18 @@ Scheduler::Print()
     L3ReadyQueue->Apply(ThreadPrint);
 }
 
+// <TODO>
+
+// Function 1. Function definition of sorting rule of L1 ReadyQueue
+
+// Function 2. Function definition of sorting rule of L2 ReadyQueue
+
+// Function 3. Scheduler::UpdatePriority()
+// Hint:
+// 1. ListIterator can help.
+// 2. Update WaitTime and priority in Aging situations
+// 3. After aging, Thread may insert to different ReadyQueue
+
 Thread *
 Scheduler::TotalFront ()
 {
@@ -299,18 +312,6 @@ Scheduler::TotalFront ()
 
     //TODO>
 }
-
-// <TODO>
-
-// Function 1. Function definition of sorting rule of L1 ReadyQueue
-
-// Function 2. Function definition of sorting rule of L2 ReadyQueue
-
-// Function 3. Scheduler::UpdatePriority()
-// Hint:
-// 1. ListIterator can help.
-// 2. Update WaitTime and priority in Aging situations
-// 3. After aging, Thread may insert to different ReadyQueue
 
 void 
 Scheduler::UpdatePriority()

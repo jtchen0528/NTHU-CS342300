@@ -112,6 +112,7 @@ class Thread {
     void Print() { cout << name; }
     void SelfTest();		// test whether thread impl is working
     //<TODO>
+    // Set & Get the value in Class Thread
     // 1. get ID
     int getID () { return ID; }
     // 2. set/get Priority

@@ -95,8 +95,4 @@ hw2_test1: hw2_test1.o start.o
 hw2_test2: hw2_test2.o start.o
 	$(LD) $(LDFLAGS) start.o hw2_test2.o -o hw2_test2.coff
 	../bin/coff2noff hw2_test2.coff hw2_test2
-
-hw2_test3: hw2_test3.o start.o
-	$(LD) $(LDFLAGS) start.o hw2_test3.o -o hw2_test3.coff
-	../bin/coff2noff hw2_test3.coff hw2_test3
 #<REPORT>

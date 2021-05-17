@@ -227,7 +227,6 @@ Thread::Yield ()
 	    kernel->scheduler->Run(nextThread, FALSE);
     }
     // kernel->scheduler->Run(nextThread, finishing);
-    
     //<TODO>
 
     (void) kernel->interrupt->SetLevel(oldLevel);
@@ -284,6 +283,7 @@ Thread::Sleep (bool finishing)
         nextThread->set_WaitTime(0);
         kernel->scheduler->Run(nextThread, finishing);
     }
+    // kernel->scheduler->Run(nextThread, finishing);
     //<TODO>
 }
 

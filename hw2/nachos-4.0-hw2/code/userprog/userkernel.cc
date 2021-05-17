@@ -175,7 +175,6 @@ void
 ForkExecute(Thread *t)
 {
     // cout << "Thread: " << (void *) t << endl;
-    DEBUG(dbgMLFQ, "ForkExecute => fork thread id: " << t->getID() << ", currentTick: " << kernel->stats->totalTicks << ", Priority : " << t->get_Priority());
     //<TODO>
     // When Thread t goes to Running state in the first time, its file should be loaded & executed.
     // Hint: This function would not be called until Thread t is on running state.
