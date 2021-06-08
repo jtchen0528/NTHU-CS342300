@@ -215,10 +215,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     vpn = (unsigned)virtAddr / PageSize;
     offset = (unsigned)virtAddr % PageSize;
 
-    DEBUG(dbgAddr, "\vpn " << vpn << ", offset" << offset);
+    DEBUG(dbgAddr, "\tvpn " << vpn << ", offset" << offset);
 
     if (tlb == NULL)
     { // => page table => vpn is index into table
+        DEBUG(dbgAddr, "\tCall Page Table");
         if (vpn >= pageTableSize)
         {
             DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
@@ -313,6 +314,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
             //return PageFaultException;
         }
+        DEBUG(dbgAddr, "\tShow Page Table " << pageTable[vpn].use);
+
         entry = &pageTable[vpn];
     }
     else
