@@ -58,12 +58,11 @@ UserProgKernel::Initialize()
 
     machine = new Machine(debugUserProg);
     fileSystem = new FileSystem();
-
-	// to save the pages which exceeds main memory
-	vm_Disk = new SynchDisk("New Disk");
+    vm_Disk = new SynchDisk("New Disk");//to save the page which the main memoey don't have enough memory to save
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif // FILESYS
+   
 }
 
 //----------------------------------------------------------------------

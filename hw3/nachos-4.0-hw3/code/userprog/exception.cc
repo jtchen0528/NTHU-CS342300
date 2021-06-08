@@ -52,7 +52,7 @@ void
 ExceptionHandler(ExceptionType which)
 {
 	int	type = kernel->machine->ReadRegister(2);
-	int	val, status;
+	int	val;
 
     switch (which) {
 	case SyscallException:
@@ -79,34 +79,6 @@ ExceptionHandler(ExceptionType which)
 			cout << "return value:" << val << endl;
 			kernel->currentThread->Finish();
 			break;
-
-		case SC_Msg:
-		{
-			//DEBUG(dbgSys, "Message received.\n");
-			val = kernel->machine->ReadRegister(4);
-			{
-				char *msg = &(kernel->machine->mainMemory[val]);
-				cout << msg << endl;
-			}
-			kernel->interrupt->Halt();
-			ASSERTNOTREACHED();
-			break;
-		}
-
-		case SC_Create:
-			val = kernel->machine->ReadRegister(4);
-			{
-				char *filename = &(kernel->machine->mainMemory[val]);
-				status = kernel->fileSystem->Create(filename);	
-				kernel->machine->WriteRegister(2, (int)status);
-			}
-			return;
-			ASSERTNOTREACHED();
-			break;
-		//<TODO
-		
-		//TODO>
-		
 		default:
 		    cerr << "Unexpected system call " << type << "\n";
  		    break;
