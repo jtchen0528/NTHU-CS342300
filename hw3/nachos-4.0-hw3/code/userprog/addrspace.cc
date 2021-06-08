@@ -143,7 +143,7 @@ bool AddrSpace::Load(char *fileName)
                 j++;
             }
 
-            //if memory is enough,just put data in without using virtual memory
+            //if memory is enough, just put data in without using virtual memory
             if (j < NumPhysPages)
             {
                 kernel->machine->usedPhyPage[j] = TRUE;
