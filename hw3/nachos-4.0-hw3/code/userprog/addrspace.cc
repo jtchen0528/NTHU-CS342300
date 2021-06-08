@@ -117,11 +117,13 @@ AddrSpace::Load(char *fileName)
 //	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
 
 
-   pageTable = new TranslationEntry[numPages];
+    pageTable = new TranslationEntry[numPages];
 
     size = numPages * PageSize;
 
- //   ASSERT(numPages <= NumPhysPages);		// check we're not trying
+    printf("size = %d, numPages = %d, PageSize = %d\n", size, numPages, PageSize);
+
+    ASSERT(numPages <= NumPhysPages);		// check we're not trying
 						// to run anything too big --
 						// at least until we have
 						// virtual memory
