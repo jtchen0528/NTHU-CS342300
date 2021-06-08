@@ -199,12 +199,17 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
     DEBUG(dbgAddr, "\tTranslate " << virtAddr << (writing ? " , write" : " , read"));
 
+    DEBUG(dbgAddr, "\tsize " << size << ", physAddr " << *physAddr);
+
+
     // check for alignment errors
     if (((size == 4) && (virtAddr & 0x3)) || ((size == 2) && (virtAddr & 0x1)))
     {
         DEBUG(dbgAddr, "Alignment problem at " << virtAddr << ", size " << size);
         return AddressErrorException;
     }
+
+    DEBUG(dbgAddr, "\tTest.");
 
     // we must have either a TLB or a page table, but not both!
     ASSERT(tlb == NULL || pageTable == NULL);
