@@ -305,7 +305,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 				// fifo = fifo + 1;               //for fifo
 				printf("page replacement finished\n");
 			}
-			return PageFaultException;
+			//return PageFaultException;
 		}
 		entry = &pageTable[vpn];
 	}
