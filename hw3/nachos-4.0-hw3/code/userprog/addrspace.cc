@@ -162,6 +162,7 @@ bool AddrSpace::Load(char *fileName)
             //Use virtual memory when memory isn't enough
             else
             {
+                printf("Start Using Virtual Memory.\n");
                 char *buf;
                 buf = new char[PageSize];
                 k = 0;
@@ -185,7 +186,7 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.initData.size > 0)
     {
-        //        DEBUG(dbgAddr, "Initializing data segment.");
+        //  DEBUG(dbgAddr, "Initializing data segment.");
         //	DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
         executable->ReadAt(
             &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
