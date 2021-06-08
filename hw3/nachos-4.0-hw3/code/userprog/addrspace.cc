@@ -119,7 +119,7 @@ bool AddrSpace::Load(char *fileName)
 
     size = numPages * PageSize;
 
-    ASSERT(numPages <= NumPhysPages); // check we're not trying
+    //ASSERT(numPages <= NumPhysPages); // check we're not trying
                                       // to run anything too big --
                                       // at least until we have
                                       // virtual memory
