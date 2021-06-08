@@ -29,9 +29,11 @@ class UserProgKernel : public ThreadedKernel {
 
     void SelfTest();		// test whether kernel is working
 
+    SynchDisk *vm_Disk;
 // These are public for notational convenience.
     Machine *machine;
     FileSystem *fileSystem;
+    bool debugUserProg;
 
 #ifdef FILESYS
     SynchDisk *synchDisk;
