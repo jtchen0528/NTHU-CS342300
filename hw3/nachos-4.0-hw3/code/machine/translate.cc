@@ -244,7 +244,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 				kernel->machine->main_tab[j] = &pageTable[vpn];
 				pageTable[vpn].physicalPage = j;
 				pageTable[vpn].valid = TRUE;
-				// pageTable[vpn].count++; //for LRU
+				pageTable[vpn].count++; //for LRU
 				// pageTable[vpn].reference_bit = FALSE; //for second chance algo.
 
 				kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
@@ -265,16 +265,16 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
 				//LRU
 
-				// int min = pageTable[0].count;
-				// victim = 0;
-				// for (int ccount = 0; ccount < 32; ccount++)
-				// {
-				// 	if (min > pageTable[ccount].count)
-				// 	{
-				// 		min = pageTable[ccount].count;
-				// 		victim = ccount;
-				// 	}
-				// }
+				int min = pageTable[0].count;
+				victim = 0;
+				for (int ccount = 0; ccount < 32; ccount++)
+				{
+					if (min > pageTable[ccount].count)
+					{
+						min = pageTable[ccount].count;
+						victim = ccount;
+					}
+				}
 				// pageTable[victim].count++;
 
 				//Second chance
@@ -302,7 +302,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 				pageTable[vpn].physicalPage = victim;
 				kernel->machine->PhyPageName[victim] = pageTable[vpn].ID;
 				main_tab[victim] = &pageTable[vpn];
-				fifo = fifo + 1;               //for fifo
+				// fifo = fifo + 1;               //for fifo
 				printf("page replacement finished\n");
 			}
 			//return PageFaultException;
