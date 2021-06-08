@@ -260,7 +260,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
-                victim = (rand() % 32);
+                // victim = (rand() % 32);
 
                 //Fifo
                 // victim = fifo%32;
