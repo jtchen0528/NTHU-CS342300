@@ -162,7 +162,6 @@ bool AddrSpace::Load(char *fileName)
             //Use virtual memory when memory isn't enough
             else
             {
-                printf("Start Using Virtual Memory.\n");
                 char *buf;
                 buf = new char[PageSize];
                 k = 0;
@@ -182,6 +181,7 @@ bool AddrSpace::Load(char *fileName)
                 kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
             }
         }
+        printf("End Using Virtual Memory.\n");
     }
 
     if (noffH.initData.size > 0)
