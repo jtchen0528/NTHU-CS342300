@@ -27,8 +27,7 @@
 
 //TODO>
 #define SC_ThreadFork	9
-// #define SC_ThreadYield	10
-#define SC_PrintInt2	10
+#define SC_ThreadYield	10
 #define SC_PrintInt	11
 #define SC_Msg	12
 
