@@ -114,9 +114,9 @@ ExceptionHandler(ExceptionType which)
  		    break;
 	    }
 	    break;
-		
+
 	case PageFaultException:
-		VirAddr = kernel->machine->ReadRegister(BadVaddrReg);
+		VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
 		kernel->stats->numPageFaults++;
 		BadPage = VirAddr / PageSize;
 		victim = RandomNumber() % NumPhysPages;
