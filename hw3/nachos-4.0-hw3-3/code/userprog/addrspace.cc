@@ -101,7 +101,9 @@ bool AddrSpace::Load(char *fileName)
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize; // we need to increase the size
                                                                                           // to leave room for the stack
     numPages = divRoundUp(size, PageSize);
-    //	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
+
+    cout << "number of pages of " << fileName<< " is "<<numPages << ", Physical Page Num: " << NumPhysPages <<endl;
+    
     size = numPages * PageSize;
 
     pageTable = new TranslationEntry[numPages];
@@ -169,6 +171,7 @@ bool AddrSpace::Load(char *fileName)
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 swap->WriteAt(buf, PageSize, i * PageSize);
+                delete swap;
             }
         }
     }
