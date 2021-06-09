@@ -123,7 +123,7 @@ bool Machine::ReadMem(int addr, int size, int *value)
 }
 
 //----------------------------------------------------------------------
-// Machine::WriteMem
+// Mahine::WriteMem
 //      Write "size" (1, 2, or 4) bytes of the contents of "value" into
 //	virtual memory at location "addr".
 //
@@ -322,7 +322,6 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
             //return PageFaultException;
         }
-        DEBUG(dbgAddr, "\tShow Page Table " << pageTable[vpn].use);
 
         entry = &pageTable[vpn];
     }
@@ -361,7 +360,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     if (writing)
         entry->dirty = TRUE;
     *physAddr = pageFrame * PageSize + offset;
-    ASSERT((*physAddr >= 0) && ((*physAddr + size) <= MemorySize));
+    // ASSERT((*physAddr >= 0) && ((*physAddr + size) <= MemorySize));
     DEBUG(dbgAddr, "phys addr = " << *physAddr);
     return NoException;
 }
