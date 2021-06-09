@@ -117,14 +117,13 @@ bool AddrSpace::Load(char *fileName)
     //                                   // virtual memory
 
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
-
+    int pageIndex = 0;
     // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
     {
         DEBUG(dbgAddr, "Initializing code segment.");
         DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-        int i = 0;
-        for (i = 0; i < divRoundUp(noffH.code.size, PageSize); i++)
+        for (pageIndex = 0; pageIndex < divRoundUp(noffH.code.size, PageSize); pageIndex++)
         {
             unsigned int FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
@@ -134,15 +133,15 @@ bool AddrSpace::Load(char *fileName)
             if (FindPhyPages < NumPhysPages)
             {
                 kernel->machine->usedPhyPage[FindPhyPages] = TRUE;
-                pageTable[i].physicalPage = FindPhyPages;
-                pageTable[i].valid = TRUE;
-                pageTable[i].use = FALSE;
-                pageTable[i].dirty = FALSE;
-                pageTable[i].readOnly = FALSE;
-                pageTable[i].count++;
-                pageTable[i].ID = ID;
-                executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
-                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << i);
+                pageTable[pageIndex].physicalPage = FindPhyPages;
+                pageTable[pageIndex].valid = TRUE;
+                pageTable[pageIndexi].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].count++;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
+                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << pageIndex);
             }
             else
             {
@@ -156,18 +155,18 @@ bool AddrSpace::Load(char *fileName)
                 }
 
                 kernel->machine->usedVirPage[FindVirPages] = TRUE;
-                pageTable[i].virtualPage = FindVirPages;
-                pageTable[i].valid = FALSE;
-                pageTable[i].use = FALSE;
-                pageTable[i].dirty = FALSE;
-                pageTable[i].readOnly = FALSE;
-                pageTable[i].count++;
-                pageTable[i].ID = ID;
-                executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
+                pageTable[pageIndex].virtualPage = FindVirPages;
+                pageTable[pageIndex].valid = FALSE;
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].count++;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 swap->WriteAt(buf, PageSize, (FindVirPages)*PageSize);
                 delete swap;
-                DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << i);
+                DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << pageIndex);
             }
         }
     }
@@ -179,7 +178,7 @@ bool AddrSpace::Load(char *fileName)
         //     &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
         //     noffH.initData.size, noffH.initData.inFileAddr);
 
-        for (int j = i; j < divRoundUp(noffH.code.size, PageSize); j++)
+        for (int j = pageIndex; j < divRoundUp(noffH.initData.size, PageSize); j++)
         {
             unsigned int FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
