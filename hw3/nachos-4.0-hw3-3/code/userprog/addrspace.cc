@@ -124,7 +124,7 @@ bool AddrSpace::Load(char *fileName)
         for (int i = 0; i < numPages; i++)
         {
             unsigned int FindPhyPages = 0;
-            while (kernel->machine->usedPhyPage[i] == TRUE)
+            while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
             {
                 FindPhyPages++;
             }
