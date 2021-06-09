@@ -150,7 +150,7 @@ bool AddrSpace::Load(char *fileName)
             {
                 kernel->machine->usedPhyPage[j] = TRUE;
                 kernel->machine->PhyPageName[j] = ID;
-                kernel->machine->main_tab[j] = &pageTable[i];
+                kernel->machine->main_tab[j] = &pageTable[pageIndex];
                 pageTable[pageIndex].physicalPage = j;
                 pageTable[pageIndex].valid = TRUE;
                 pageTable[pageIndex].use = FALSE;
@@ -210,7 +210,7 @@ bool AddrSpace::Load(char *fileName)
             {
                 kernel->machine->usedPhyPage[j] = TRUE;
                 kernel->machine->PhyPageName[j] = ID;
-                kernel->machine->main_tab[j] = &pageTable[i];
+                kernel->machine->main_tab[j] = &pageTable[pageIndex];
                 pageTable[pageIndex].physicalPage = j;
                 pageTable[pageIndex].valid = TRUE;
                 pageTable[pageIndex].use = FALSE;
