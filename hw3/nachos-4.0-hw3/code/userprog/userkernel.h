@@ -33,7 +33,6 @@ public:
   // These are public for notational convenience.
   Machine *machine;
   FileSystem *fileSystem;
-  SynchDisk *vm_Disk;
 
   bool debugUserProg; // single step user program
 

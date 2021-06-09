@@ -298,10 +298,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 //get the page victm and save in the disk
                 bcopy(&mainMemory[victim * PageSize], buf_1, PageSize);
-//                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf_2);
                 swap->ReadAt(buf_2, PageSize, vpn * PageSize);
                 bcopy(buf_2, &mainMemory[victim * PageSize], PageSize);
-//                kernel->vm_Disk->WriteSector(pageTable[vpn].virtualPage, buf_1);
 	            swap->WriteAt(buf_1, PageSize, vpn * PageSize);
 
                 main_tab[victim]->virtualPage = pageTable[vpn].virtualPage;
