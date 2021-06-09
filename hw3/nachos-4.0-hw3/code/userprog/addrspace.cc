@@ -249,7 +249,57 @@ bool AddrSpace::Load(char *fileName)
             }
         }
     }
+    for (; pageIndex < numPages; pageIndex++)
+    {
+        unsigned int j = 0;
+        while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
+        {
+            j++;
+        }
 
+        //if memory is enough,just put data in without using virtual memory
+        if (j < NumPhysPages)
+        {
+            kernel->machine->usedPhyPage[j] = TRUE;
+            kernel->machine->PhyPageName[j] = ID;
+            kernel->machine->main_tab[j] = &pageTable[pageIndex];
+            pageTable[pageIndex].physicalPage = j;
+            pageTable[pageIndex].valid = TRUE;
+            pageTable[pageIndex].use = FALSE;
+            pageTable[pageIndex].dirty = FALSE;
+            pageTable[pageIndex].readOnly = FALSE;
+            pageTable[pageIndex].ID = ID;
+            pageTable[pageIndex].count++;               //for LRU,count+1 when save in memory
+            pageTable[pageIndex].reference_bit = FALSE; //for second chance algo.
+            executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
+
+            cout << "used physical page: " << j << " at pageTable " << pageIndex << endl;
+        }
+        //Use virtual memory when memory isn't enough
+        else
+        {
+            char *buf;
+            buf = new char[PageSize];
+            k = 0;
+            while (kernel->machine->usedvirPage[k] != FALSE)
+            {
+                k++;
+            }
+            OpenFile *swap = kernel->fileSystem->Open("swapfile");
+            kernel->machine->usedvirPage[k] = TRUE;
+            pageTable[pageIndex].virtualPage = k; //record which virtualpage you save
+            pageTable[pageIndex].valid = FALSE;   //not load in main_memory
+            pageTable[pageIndex].use = FALSE;
+            pageTable[pageIndex].dirty = FALSE;
+            pageTable[pageIndex].readOnly = FALSE;
+            pageTable[pageIndex].ID = ID;
+            executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
+            kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+            // swap->WriteAt(buf, PageSize, i * PageSize);
+
+            cout << "used virtual page: " << k << " at pageTable " << pageIndex << endl;
+        }
+    }
     delete executable; // close file
     return TRUE;       // success
 }
