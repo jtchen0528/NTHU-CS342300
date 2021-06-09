@@ -43,6 +43,8 @@ public:
                              // page is modified.
 };
 
+#endif
+
 class FrameInfoEntry
 {
 public:
@@ -53,5 +55,3 @@ public:
 
   AddrSpace process;
 };
-
-#endif
