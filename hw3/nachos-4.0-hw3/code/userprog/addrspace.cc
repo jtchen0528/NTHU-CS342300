@@ -117,8 +117,6 @@ bool AddrSpace::Load(char *fileName)
 
     pageTable = new TranslationEntry[numPages];
 
-    pageTableSize = numPages;
-
     size = numPages * PageSize;
 
     // ASSERT(numPages <= NumPhysPages);		// check we're not trying
