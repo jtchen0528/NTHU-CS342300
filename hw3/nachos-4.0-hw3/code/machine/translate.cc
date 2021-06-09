@@ -232,6 +232,9 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             //hanle page fault
             // DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
+            
+            OpenFile *swap = kernel->fileSystem->Open("swapfile");
+            
             printf("page fault\n");
             kernel->stats->numPageFaults++;
             j = 0;
@@ -254,7 +257,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 pageTable[vpn].count++; //for LRU
                 // pageTable[vpn].reference_bit = FALSE; //for second chance algo.
 
-                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
+                //kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
+                swap->ReadAt(buf, PageSize, vpn * PageSize);
                 bcopy(buf, &mainMemory[j * PageSize], PageSize);
             }
             else
@@ -263,7 +267,6 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_1 = new char[PageSize];
                 char *buf_2;
                 buf_2 = new char[PageSize];
-                OpenFile *swap = kernel->fileSystem->Open("swapfile");
 
                 //Random
                 // victim = (rand() % 32);
