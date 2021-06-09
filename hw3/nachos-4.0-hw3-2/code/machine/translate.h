@@ -51,6 +51,7 @@ public:
               // (In other words, the entry hasn't been initialized.)
   unsigned int vpn;
 
-  AddrSpace *process;
+  AddrSpace process;
 };
+
 #endif
