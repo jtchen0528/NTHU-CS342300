@@ -53,10 +53,10 @@ void ExceptionHandler(ExceptionType which)
 	int type = kernel->machine->ReadRegister(2);
 	int val, status;
 
-	if (type == 10)
-	{
-		type = 1;
-	}
+	// if (type == 10)
+	// {
+	// 	type = 1;
+	// }
 
 	// cout << "which = " << which << " type = " << type << endl;
 
