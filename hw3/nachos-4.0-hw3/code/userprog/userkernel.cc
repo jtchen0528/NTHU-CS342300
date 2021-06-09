@@ -65,6 +65,8 @@ void UserProgKernel::Initialize()
 
 	vm_Disk = new SynchDisk("New Disk");
 
+	fileSystem->Create("swapfile");
+
 #ifdef FILESYS
 	synchDisk = new SynchDisk("New SynchDisk");
 #endif // FILESYS

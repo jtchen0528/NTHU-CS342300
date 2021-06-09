@@ -168,7 +168,7 @@ bool AddrSpace::Load(char *fileName)
                 {
                     k++;
                 }
-
+                OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 kernel->machine->usedvirPage[k] = TRUE;
                 pageTable[i].virtualPage = k; //record which virtualpage you save
                 pageTable[i].valid = FALSE;   //not load in main_memory
@@ -178,6 +178,9 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].ID = ID;
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
                 kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+                swap->WriteAt(buf, PageSize, i * PageSize);
+
+                cout << "used virtual page: " << k << " at pageTable " << i << endl;
             }
         }
     }
