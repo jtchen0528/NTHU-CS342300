@@ -107,15 +107,6 @@ bool AddrSpace::Load(char *fileName)
     size = numPages * PageSize;
 
     pageTable = new TranslationEntry[numPages];
-    for (unsigned int i = 0; i < numPages; i++)
-    {
-        pageTable[i].virtualPage = i; // for now, virt page # = phys page #
-        pageTable[i].physicalPage = i;
-        pageTable[i].valid = TRUE;
-        pageTable[i].use = FALSE;
-        pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;
-    }
 
     // ASSERT(numPages <= NumPhysPages); // check we're not trying
     //                                   // to run anything too big --
