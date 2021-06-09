@@ -54,7 +54,7 @@ ExceptionHandler(ExceptionType which)
 	int	type = kernel->machine->ReadRegister(2);
 	int	val, status;
 
-	int VirAddr, BadPage, victim;
+	int VirAddr, BadPageNum, victim;
 
     switch (which) {
 	case SyscallException:
@@ -118,9 +118,11 @@ ExceptionHandler(ExceptionType which)
 	case PageFaultException:
 		VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
 		kernel->stats->numPageFaults++;
-		BadPage = VirAddr / PageSize;
+		BadPageNum = VirAddr / PageSize;
 		victim = RandomNumber() % NumPhysPages;
-        DEBUG(dbgAddr, "Page Fault: move" << victim << " is moved out for Page " << BadPage);
+        DEBUG(dbgAddr, "Page Fault: Physical Page " << victim << " is moved out for Virtual Page " << BadPageNum);
+		kernel->SwapPage(victim, BadPageNum);
+		return;
 		break;
 
 	default:

@@ -108,6 +108,13 @@ bool AddrSpace::Load(char *fileName)
 
     pageTable = new TranslationEntry[numPages];
 
+    if (numPages > NumPhysPages) {
+        NumVirPages = numPages - NumPhysPages;
+        kernel->machine->usedVirPage = new bool[NumVirPages];
+    } else {
+        NumVirPages = 0;
+    }
+
     // ASSERT(numPages <= NumPhysPages); // check we're not trying
     //                                   // to run anything too big --
     //                                   // at least until we have
@@ -138,7 +145,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].readOnly = FALSE;
                 pageTable[i].count++;
                 pageTable[i].ID = ID;
-                executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]), PageSize, noffH.code.inFileAddr + (i * PageSize));
+                executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
                 DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << i);
             }
             else
@@ -151,7 +158,7 @@ bool AddrSpace::Load(char *fileName)
                 {
                     FindVirPages++;
                 }
-
+                
                 kernel->machine->usedVirPage[FindVirPages] = TRUE;
                 pageTable[i].virtualPage = FindVirPages;
                 pageTable[i].valid = FALSE;
@@ -162,10 +169,9 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].ID = ID;
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
-                swap->WriteAt(buf, PageSize, i * PageSize);
+                swap->WriteAt(buf, PageSize, (FindVirPages) * PageSize);
                 delete swap;
                 DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << i);
-
             }
         }
     }
