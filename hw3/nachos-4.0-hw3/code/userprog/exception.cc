@@ -55,7 +55,7 @@ void ExceptionHandler(ExceptionType which)
 
 	if (type == 10)
 	{
-		type = 11;
+		type = 1;
 	}
 
 	cout << "which = " << which << " type = " << type << endl;
