@@ -216,6 +216,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     offset = (unsigned)virtAddr % PageSize;
 
     DEBUG(dbgAddr, "\tvpn " << vpn << ", offset" << offset);
+    DEBUG(dbgAddr, "\tpageTableSize " << pageTableSize << ", !pageTable[vpn].valid" << !pageTable[vpn].valid);
 
     if (tlb == NULL)
     { // => page table => vpn is index into table
