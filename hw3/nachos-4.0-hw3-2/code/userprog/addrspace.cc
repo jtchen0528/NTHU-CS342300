@@ -217,7 +217,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[j].readOnly = FALSE;
                 pageTable[j].count++;
                 pageTable[j].ID = ID;
-                executable->ReadAt(buf, PageSize, noffH.initData.inFileAddr + (i * PageSize));
+                executable->ReadAt(buf, PageSize, noffH.initData.inFileAddr + (j * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 swap->WriteAt(buf, PageSize, (FindVirPages)*PageSize);
                 delete swap;
