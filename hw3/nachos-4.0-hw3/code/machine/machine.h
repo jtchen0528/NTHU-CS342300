@@ -27,7 +27,7 @@
 
 // Definitions related to the size, and format of user memory
 
-const unsigned int PageSize = 128; // set the page size equal to
+const unsigned int PageSize = 512; // set the page size equal to
 								   // the disk sector size, for simplicity
 
 const unsigned int NumPhysPages = 32;
@@ -140,8 +140,8 @@ public:
     bool usedvirPage[NumVirPages];
     int  ID_num;
     int PhyPageName[NumPhysPages];
-    int count[NumVirPages]; //for LRU
-    bool reference_bit[NumVirPages];//for second chance algo.
+    int count[NumPhysPages]; //for LRU
+    bool reference_bit[NumPhysPages];//for second chance algo.
     int sector_number;//record which sector the disk is saving
 
     TranslationEntry *main_tab[NumPhysPages];
