@@ -63,7 +63,7 @@ void UserProgKernel::Initialize()
 	machine = new Machine(debugUserProg);
 	fileSystem = new FileSystem();
 
-	vm_Disk = new SynchDisk("New Disk");
+	// vm_Disk = new SynchDisk("New Disk");
 
 	fileSystem->Create("swapfile");
 
