@@ -130,7 +130,7 @@ bool AddrSpace::Load(char *fileName)
 
         for (int i = 0; i < numPages; i++)
         {
-            int FindPhyPages = 0;
+            unsigned int FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[i] == TRUE)
             {
                 FindPhyPages++;
@@ -152,7 +152,7 @@ bool AddrSpace::Load(char *fileName)
                 char *buf;
                 buf = new char[PageSize];
 
-                int FindVirPages;
+                unsigned int FindVirPages;
                 while (kernel->machine->usedVirPage[FindVirPages] != FALSE)
                 {
                     FindVirPages++;
@@ -167,8 +167,8 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].count++;
                 pageTable[i].ID = ID;
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
-                OpenFile *swap = kernel->fileSystem->Open('swapfile');
-                swap->WriteAt(buf, PageSize, i * PageSize)
+                OpenFile *swap = kernel->fileSystem->Open("swapfile");
+                swap->WriteAt(buf, PageSize, i * PageSize);
             }
         }
     }
