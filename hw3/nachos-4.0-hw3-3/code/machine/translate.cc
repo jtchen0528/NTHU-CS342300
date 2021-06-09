@@ -94,7 +94,6 @@ bool Machine::ReadMem(int addr, int size, int *value)
 	exception = Translate(addr, &physicalAddress, size, FALSE);
 	if (exception != NoException)
 	{
-		DEBUG(dbgAddr, "Recieved Exception " << exception);
 		RaiseException(exception, addr);
 		return FALSE;
 	}
