@@ -169,7 +169,7 @@ bool AddrSpace::Load(char *fileName)
                     k++;
                 }
 
-                kernel->machine->usedvirPage[k] = true;
+                kernel->machine->usedvirPage[k] = TRUE;
                 pageTable[i].virtualPage = k; //record which virtualpage you save
                 pageTable[i].valid = FALSE;   //not load in main_memory
                 pageTable[i].use = FALSE;
