@@ -63,7 +63,7 @@ void UserProgKernel::Initialize()
 	machine = new Machine(debugUserProg);
 	fileSystem = new FileSystem();
 
-	// vm_Disk = new SynchDisk("New Disk");
+	vm_Disk = new SynchDisk("New Disk");
 
 	fileSystem->Create("swapfile");
 
@@ -82,6 +82,9 @@ UserProgKernel::~UserProgKernel()
 {
 	delete fileSystem;
 	delete machine;
+	delete vm_Disk;
+	fileSystem->Remove("swapfile");
+
 #ifdef FILESYS
 	delete synchDisk;
 #endif
