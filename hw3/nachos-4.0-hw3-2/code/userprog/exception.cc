@@ -54,7 +54,7 @@ ExceptionHandler(ExceptionType which)
 	int	type = kernel->machine->ReadRegister(2);
 	int	val, status;
 
-	// int VirAddr, BadPageNum, victim;
+	int VirAddr, BadPageNum, victim;
 
     switch (which) {
 	case SyscallException:
@@ -115,15 +115,15 @@ ExceptionHandler(ExceptionType which)
 	    }
 	    break;
 
-	// case PageFaultException:
-	// 	VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
-	// 	kernel->stats->numPageFaults++;
-	// 	BadPageNum = VirAddr / PageSize;
-	// 	victim = RandomNumber() % NumPhysPages;
-    //     DEBUG(dbgAddr, "Page Fault: Physical Page " << victim << " is moved out for Virtual Page " << BadPageNum);
-	// 	kernel->SwapPage(victim, BadPageNum);
-	// 	return;
-	// 	break;
+	case PageFaultException:
+		VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
+		kernel->stats->numPageFaults++;
+		BadPageNum = VirAddr / PageSize;
+		victim = RandomNumber() % NumPhysPages;
+        DEBUG(dbgAddr, "Page Fault: Physical Page " << victim << " is moved out for Virtual Page " << BadPageNum);
+		kernel->SwapPage(victim, BadPageNum);
+		return;
+		break;
 
 	default:
 	    cerr << "Unexpected user mode exception" << which << "\n";

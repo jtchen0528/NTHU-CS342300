@@ -221,12 +221,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 		else if (!pageTable[vpn].valid)
 		{
 			DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
-			int victim;
-			kernel->stats->numPageFaults++;
-			victim = RandomNumber() % NumPhysPages;
-			DEBUG(dbgAddr, "Page Fault: Physical Page " << victim << " is moved out for Virtual Page " << vpn);
-			kernel->SwapPage(victim, vpn);
-			// return PageFaultException;
+			kernel->machine->WriteRegister(BadVAddrReg, vpn);
+			return PageFaultException;
 		}
 		entry = &pageTable[vpn];
 	}
