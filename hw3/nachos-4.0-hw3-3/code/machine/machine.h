@@ -31,7 +31,7 @@ const unsigned int PageSize = 128; // set the page size equal to
 								   // the disk sector size, for simplicity
 
 const unsigned int NumPhysPages = 32;
-unsigned int NumVirPages = 32;
+const unsigned int NumVirPages = 32;
 const int MemorySize = (NumPhysPages * PageSize);
 const int TLBSize = 4; // if there is a TLB, make it small
 
@@ -138,7 +138,7 @@ public:
 	bool ReadMem(int addr, int size, int *value);
 
     bool usedPhyPage[NumPhysPages]; //record which the page in the main memory is used.
-    bool *usedVirPage;
+    bool usedVirPage[NumVirPages];
 	int ID_num;
 
 private:

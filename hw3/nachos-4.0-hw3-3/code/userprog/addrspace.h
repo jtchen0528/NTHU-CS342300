@@ -32,7 +32,7 @@ public:
   void RestoreState(); // info on a context switch
 
   static bool usedPhyPage[NumPhysPages];
-  static bool *usedVirPage;
+  static bool usedVirPage[NumVirPages];
   int ID;
 
 private:

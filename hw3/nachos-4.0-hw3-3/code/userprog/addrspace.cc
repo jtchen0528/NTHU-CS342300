@@ -108,13 +108,6 @@ bool AddrSpace::Load(char *fileName)
 
     pageTable = new TranslationEntry[numPages];
 
-    if (numPages > NumPhysPages) {
-        NumVirPages = numPages - NumPhysPages;
-        kernel->machine->usedVirPage = new bool[NumVirPages];
-    } else {
-        NumVirPages = 0;
-    }
-
     // ASSERT(numPages <= NumPhysPages); // check we're not trying
     //                                   // to run anything too big --
     //                                   // at least until we have
