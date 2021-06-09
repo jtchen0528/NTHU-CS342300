@@ -164,7 +164,7 @@ void UserProgKernel::SwapPage(int victim, int vpn)
 	DEBUG(dbgAddr, "Total Physical Page: " << NumPhysPages << ", Total Virtual Page: " << NumVirPages);
 
 	OpenFile *swap = fileSystem->Open("swapfile");
-	char* buf_m, buf_v;
+	char *buf_m, *buf_v;
 	int VirPage = machine->pageTable[vpn].virtualPage;
 	buf_m = new char[PageSize];
 	buf_v = new char[PageSize];
