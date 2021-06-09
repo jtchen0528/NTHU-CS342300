@@ -157,6 +157,9 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].count++;               //for LRU,count+1 when save in memory
                 pageTable[i].reference_bit = FALSE; //for second chance algo.
                 executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
+                
+                cout << "used physical page: " << j << " at pageTable " << i << endl;
+
             }
             //Use virtual memory when memory isn't enough
             else
