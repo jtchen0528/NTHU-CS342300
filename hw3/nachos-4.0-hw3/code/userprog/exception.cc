@@ -58,7 +58,7 @@ void ExceptionHandler(ExceptionType which)
 	// 	type = 1;
 	// }
 
-	// cout << "which = " << which << " type = " << type << endl;
+	cout << "which = " << which << " type = " << type << endl;
 
 	switch (which)
 	{
