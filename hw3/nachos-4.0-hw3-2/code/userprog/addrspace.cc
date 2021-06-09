@@ -103,6 +103,7 @@ bool AddrSpace::Load(char *fileName)
     numPages = divRoundUp(size, PageSize);
 
     cout << "number of pages of " << fileName << " is " << numPages << ", Physical Page Num: " << NumPhysPages << endl;
+    cout << "code.size " << noffH.code.size << " initData.size " << noffH.initData.size << " uninitData.size " << noffH.uninitData.size << endl;
 
     size = numPages * PageSize;
 
