@@ -102,8 +102,8 @@ bool AddrSpace::Load(char *fileName)
                                                                                           // to leave room for the stack
     numPages = divRoundUp(size, PageSize);
 
-    cout << "number of pages of " << fileName<< " is "<<numPages << ", Physical Page Num: " << NumPhysPages <<endl;
-    
+    cout << "number of pages of " << fileName << " is " << numPages << ", Physical Page Num: " << NumPhysPages << endl;
+
     size = numPages * PageSize;
 
     kernel->machine->pageTableSize = numPages;
@@ -153,7 +153,7 @@ bool AddrSpace::Load(char *fileName)
                 {
                     FindVirPages++;
                 }
-                
+
                 kernel->machine->usedVirPage[FindVirPages] = TRUE;
                 pageTable[i].virtualPage = FindVirPages;
                 pageTable[i].valid = FALSE;
@@ -164,7 +164,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].ID = ID;
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
-                swap->WriteAt(buf, PageSize, (FindVirPages) * PageSize);
+                swap->WriteAt(buf, PageSize, (FindVirPages)*PageSize);
                 delete swap;
                 DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << i);
             }
