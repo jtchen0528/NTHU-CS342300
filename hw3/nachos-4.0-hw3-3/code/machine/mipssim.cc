@@ -144,7 +144,7 @@ void Machine::OneInstruction(Instruction *instr)
 	int sum, diff, tmp, value;
 	unsigned int rs, rt, imm;
 
-    DEBUG(dbgAddr, "Instruction OPcode " << instr->opCode);
+    DEBUG(dbgAddr, "Instruction OPcode " << int(instr->opCode));
 
 	// Execute the instruction (cf. Kane's book)
 	switch (instr->opCode)
