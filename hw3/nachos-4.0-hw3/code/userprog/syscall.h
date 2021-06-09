@@ -24,7 +24,10 @@
 #define SC_Join		3
 #define SC_Create	4
 //<TODO
-
+#define SC_Open		5
+#define SC_Read		6
+#define SC_Write	7
+#define SC_Close	8
 //TODO>
 #define SC_ThreadFork	9
 #define SC_ThreadYield	10
