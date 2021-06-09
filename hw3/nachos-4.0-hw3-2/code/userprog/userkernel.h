@@ -16,6 +16,7 @@
 #include "filesys.h"
 #include "machine.h"
 #include "synchdisk.h"
+#include "translate.h"
 class SynchDisk;
 class UserProgKernel : public ThreadedKernel
 {
