@@ -153,7 +153,7 @@ bool AddrSpace::Load(char *fileName)
                 buf = new char[PageSize];
 
                 int FindVirPages;
-                while (kernel->machine->usedvirPage[FindVirPages] != FALSE)
+                while (kernel->machine->usedVirPage[FindVirPages] != FALSE)
                 {
                     FindVirPages++;
                 }
@@ -167,7 +167,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].count++;
                 pageTable[i].ID = ID;
                 executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
-                OpenFile *swap = fileSystem->Open('swapfile');
+                OpenFile *swap = kernel->fileSystem->Open('swapfile');
                 swap->WriteAt(buf, PageSize, i * PageSize)
             }
         }
