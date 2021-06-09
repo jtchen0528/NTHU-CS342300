@@ -178,7 +178,7 @@ bool AddrSpace::Load(char *fileName)
         //     &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
         //     noffH.initData.size, noffH.initData.inFileAddr);
 
-        for (int j = pageIndex; j < divRoundUp(noffH.initData.size, PageSize); j++)
+        for (; pageIndex < divRoundUp(noffH.initData.size, PageSize); pageIndex++)
         {
             unsigned int FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
@@ -188,15 +188,15 @@ bool AddrSpace::Load(char *fileName)
             if (FindPhyPages < NumPhysPages)
             {
                 kernel->machine->usedPhyPage[FindPhyPages] = TRUE;
-                pageTable[j].physicalPage = FindPhyPages;
-                pageTable[j].valid = TRUE;
-                pageTable[j].use = FALSE;
-                pageTable[j].dirty = FALSE;
-                pageTable[j].readOnly = FALSE;
-                pageTable[j].count++;
-                pageTable[j].ID = ID;
-                executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.initData.inFileAddr + (j * PageSize));
-                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << j);
+                pageTable[pageIndex].physicalPage = FindPhyPages;
+                pageTable[pageIndex].valid = TRUE;
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].count++;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.initData.inFileAddr + (pageIndex * PageSize));
+                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << pageIndex);
             }
             else
             {
@@ -210,19 +210,66 @@ bool AddrSpace::Load(char *fileName)
                 }
 
                 kernel->machine->usedVirPage[FindVirPages] = TRUE;
-                pageTable[j].virtualPage = FindVirPages;
-                pageTable[j].valid = FALSE;
-                pageTable[j].use = FALSE;
-                pageTable[j].dirty = FALSE;
-                pageTable[j].readOnly = FALSE;
-                pageTable[j].count++;
-                pageTable[j].ID = ID;
-                executable->ReadAt(buf, PageSize, noffH.initData.inFileAddr + (j * PageSize));
+                pageTable[pageIndex].virtualPage = FindVirPages;
+                pageTable[pageIndex].valid = FALSE;
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].count++;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(buf, PageSize, noffH.initData.inFileAddr + (pageIndex * PageSize));
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 swap->WriteAt(buf, PageSize, (FindVirPages)*PageSize);
                 delete swap;
-                DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << j);
+                DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << pageIndex);
             }
+        }
+    }
+
+    for (; pageIndex < numPages; pageIndex++)
+    {
+        unsigned int FindPhyPages = 0;
+        while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
+        {
+            FindPhyPages++;
+        }
+        if (FindPhyPages < NumPhysPages)
+        {
+            kernel->machine->usedPhyPage[FindPhyPages] = TRUE;
+            pageTable[pageIndex].physicalPage = FindPhyPages;
+            pageTable[pageIndex].valid = TRUE;
+            pageTable[pageIndex].use = FALSE;
+            pageTable[pageIndex].dirty = FALSE;
+            pageTable[pageIndex].readOnly = FALSE;
+            pageTable[pageIndex].count++;
+            pageTable[pageIndex].ID = ID;
+            executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
+            DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << pageIndex);
+        }
+        else
+        {
+            char *buf;
+            buf = new char[PageSize];
+
+            unsigned int FindVirPages;
+            while (kernel->machine->usedVirPage[FindVirPages] == TRUE)
+            {
+                FindVirPages++;
+            }
+
+            kernel->machine->usedVirPage[FindVirPages] = TRUE;
+            pageTable[pageIndex].virtualPage = FindVirPages;
+            pageTable[pageIndex].valid = FALSE;
+            pageTable[pageIndex].use = FALSE;
+            pageTable[pageIndex].dirty = FALSE;
+            pageTable[pageIndex].readOnly = FALSE;
+            pageTable[pageIndex].count++;
+            pageTable[pageIndex].ID = ID;
+            executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
+            OpenFile *swap = kernel->fileSystem->Open("swapfile");
+            swap->WriteAt(buf, PageSize, (FindVirPages)*PageSize);
+            delete swap;
+            DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << pageIndex);
         }
     }
 
