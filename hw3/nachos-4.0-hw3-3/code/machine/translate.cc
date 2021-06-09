@@ -209,7 +209,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 	// from the virtual address
 	vpn = (unsigned)virtAddr / PageSize;
 	offset = (unsigned)virtAddr % PageSize;
-	DEBUG(dbgAddr, "\tvpn " << vpn << " offset " << offset));
+	DEBUG(dbgAddr, "\tvpn " << vpn << " offset " << offset);
 
 	if (tlb == NULL)
 	{ // => page table => vpn is index into table
