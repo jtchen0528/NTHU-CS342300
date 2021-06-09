@@ -37,6 +37,8 @@ private:
                                // for now!
   unsigned int numPages;       // Number of pages in the virtual
                                // address space
+  
+  unsigned int pageTableSize;
 
   bool Load(char *fileName); // Load the program into memory
                              // return false if not found

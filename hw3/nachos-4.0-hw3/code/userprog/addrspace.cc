@@ -117,7 +117,7 @@ bool AddrSpace::Load(char *fileName)
 
     pageTable = new TranslationEntry[numPages];
 
-    pageTableSize = pageTable;
+    pageTableSize = numPages;
 
     size = numPages * PageSize;
 
