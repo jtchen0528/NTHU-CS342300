@@ -135,7 +135,7 @@ bool AddrSpace::Load(char *fileName)
                 kernel->machine->usedPhyPage[FindPhyPages] = TRUE;
                 pageTable[pageIndex].physicalPage = FindPhyPages;
                 pageTable[pageIndex].valid = TRUE;
-                pageTable[pageIndexi].use = FALSE;
+                pageTable[pageIndex].use = FALSE;
                 pageTable[pageIndex].dirty = FALSE;
                 pageTable[pageIndex].readOnly = FALSE;
                 pageTable[pageIndex].count++;
@@ -196,7 +196,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[j].count++;
                 pageTable[j].ID = ID;
                 executable->ReadAt(&(kernel->machine->mainMemory[FindPhyPages * PageSize]), PageSize, noffH.initData.inFileAddr + (j * PageSize));
-                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << i);
+                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << j);
             }
             else
             {
