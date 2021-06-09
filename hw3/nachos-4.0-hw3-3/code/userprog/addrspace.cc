@@ -130,7 +130,7 @@ bool AddrSpace::Load(char *fileName)
             }
             if (FindPhyPages < NumPhysPages)
             {
-                kernel->machine->usedPhyPage[i] = TRUE;
+                kernel->machine->usedPhyPage[FindPhyPages] = TRUE;
                 pageTable[i].physicalPage = FindPhyPages;
                 pageTable[i].valid = TRUE;
                 pageTable[i].use = FALSE;
@@ -147,12 +147,12 @@ bool AddrSpace::Load(char *fileName)
                 buf = new char[PageSize];
 
                 unsigned int FindVirPages;
-                while (kernel->machine->usedVirPage[FindVirPages] != FALSE)
+                while (kernel->machine->usedVirPage[FindVirPages] == TRUE)
                 {
                     FindVirPages++;
                 }
 
-                kernel->machine->usedVirPage[i] = TRUE;
+                kernel->machine->usedVirPage[FindVirPages] = TRUE;
                 pageTable[i].virtualPage = FindVirPages;
                 pageTable[i].valid = FALSE;
                 pageTable[i].use = FALSE;
