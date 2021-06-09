@@ -148,6 +148,7 @@ bool AddrSpace::Load(char *fileName)
                 pageTable[i].count++;
                 pageTable[i].ID = ID;
                 executable->ReadAt(&(kernel->machine->mainMemory[noffH.code.virtualAddr]), PageSize, noffH.code.inFileAddr + (i * PageSize));
+                DEBUG(dbgAddr, "Physical Page " << FindPhyPages << " is stored in PageTable " << i);
             }
             else
             {
@@ -172,6 +173,8 @@ bool AddrSpace::Load(char *fileName)
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 swap->WriteAt(buf, PageSize, i * PageSize);
                 delete swap;
+                DEBUG(dbgAddr, "Virtual Page " << FindVirPages << " is stored in PageTable " << i);
+
             }
         }
     }
