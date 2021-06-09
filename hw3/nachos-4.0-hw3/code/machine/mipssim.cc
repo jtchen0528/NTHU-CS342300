@@ -144,8 +144,6 @@ void Machine::OneInstruction(Instruction *instr)
 	int sum, diff, tmp, value;
 	unsigned int rs, rt, imm;
 
-	cout << instr->opCode << endl;
-
 	// Execute the instruction (cf. Kane's book)
 	switch (instr->opCode)
 	{

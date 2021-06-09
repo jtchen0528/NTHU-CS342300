@@ -54,6 +54,8 @@ ExceptionHandler(ExceptionType which)
 	int	type = kernel->machine->ReadRegister(2);
 	int	val, status;
 
+	cout << "which = " << which << endl;
+
     switch (which) {
 	case SyscallException:
 	    switch(type) {
