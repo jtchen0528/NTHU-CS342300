@@ -127,6 +127,7 @@ bool AddrSpace::Load(char *fileName)
     // 					// virtual memory
 
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
+    unsigned int pageIndex;
 
     // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
@@ -136,9 +137,9 @@ bool AddrSpace::Load(char *fileName)
         //     	executable->ReadAt(
         // 	&(kernel->machine->mainMemory[noffH.code.virtualAddr]),
         // 		noffH.code.size, noffH.code.inFileAddr);
-        for (unsigned int j = 0, i = 0; i < numPages; i++)
+        for (pageIndex = 0; pageIndex < divRoundUp(noffH.code.size, PageSize); pageIndex++)
         {
-            j = 0;
+            unsigned int j = 0;
             while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
             {
                 j++;
@@ -150,17 +151,17 @@ bool AddrSpace::Load(char *fileName)
                 kernel->machine->usedPhyPage[j] = TRUE;
                 kernel->machine->PhyPageName[j] = ID;
                 kernel->machine->main_tab[j] = &pageTable[i];
-                pageTable[i].physicalPage = j;
-                pageTable[i].valid = TRUE;
-                pageTable[i].use = FALSE;
-                pageTable[i].dirty = FALSE;
-                pageTable[i].readOnly = FALSE;
-                pageTable[i].ID = ID;
-                pageTable[i].count++;               //for LRU,count+1 when save in memory
-                pageTable[i].reference_bit = FALSE; //for second chance algo.
-                executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
+                pageTable[pageIndex].physicalPage = j;
+                pageTable[pageIndex].valid = TRUE;
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].ID = ID;
+                pageTable[pageIndex].count++;               //for LRU,count+1 when save in memory
+                pageTable[pageIndex].reference_bit = FALSE; //for second chance algo.
+                executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
 
-                cout << "used physical page: " << j << " at pageTable " << i << endl;
+                cout << "used physical page: " << j << " at pageTable " << pageIndex << endl;
             }
             //Use virtual memory when memory isn't enough
             else
@@ -174,27 +175,79 @@ bool AddrSpace::Load(char *fileName)
                 }
                 OpenFile *swap = kernel->fileSystem->Open("swapfile");
                 kernel->machine->usedvirPage[k] = TRUE;
-                pageTable[i].virtualPage = k; //record which virtualpage you save
-                pageTable[i].valid = FALSE;   //not load in main_memory
-                pageTable[i].use = FALSE;
-                pageTable[i].dirty = FALSE;
-                pageTable[i].readOnly = FALSE;
-                pageTable[i].ID = ID;
-                executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
+                pageTable[pageIndex].virtualPage = k; //record which virtualpage you save
+                pageTable[pageIndex].valid = FALSE;   //not load in main_memory
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (pageIndex * PageSize));
                 kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
                 // swap->WriteAt(buf, PageSize, i * PageSize);
 
-                cout << "used virtual page: " << k << " at pageTable " << i << endl;
+                cout << "used virtual page: " << k << " at pageTable " << pageIndex << endl;
             }
         }
     }
     if (noffH.initData.size > 0)
     {
-        // DEBUG(dbgAddr, "Initializing data segment.");
-        // DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
-        executable->ReadAt(
-            &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
-            noffH.initData.size, noffH.initData.inFileAddr);
+        DEBUG(dbgAddr, "Initializing data segment.");
+        DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+        // executable->ReadAt(
+        //     &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
+        //     noffH.initData.size, noffH.initData.inFileAddr);
+
+        for (; pageIndex < divRoundUp(noffH.initData.size, PageSize); pageIndex++)
+        {
+            unsigned int j = 0;
+            while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
+            {
+                j++;
+            }
+
+            //if memory is enough,just put data in without using virtual memory
+            if (j < NumPhysPages)
+            {
+                kernel->machine->usedPhyPage[j] = TRUE;
+                kernel->machine->PhyPageName[j] = ID;
+                kernel->machine->main_tab[j] = &pageTable[i];
+                pageTable[pageIndex].physicalPage = j;
+                pageTable[pageIndex].valid = TRUE;
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].ID = ID;
+                pageTable[pageIndex].count++;               //for LRU,count+1 when save in memory
+                pageTable[pageIndex].reference_bit = FALSE; //for second chance algo.
+                executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.initData.inFileAddr + (pageIndex * PageSize));
+
+                cout << "used physical page: " << j << " at pageTable " << pageIndex << endl;
+            }
+            //Use virtual memory when memory isn't enough
+            else
+            {
+                char *buf;
+                buf = new char[PageSize];
+                k = 0;
+                while (kernel->machine->usedvirPage[k] != FALSE)
+                {
+                    k++;
+                }
+                OpenFile *swap = kernel->fileSystem->Open("swapfile");
+                kernel->machine->usedvirPage[k] = TRUE;
+                pageTable[pageIndex].virtualPage = k; //record which virtualpage you save
+                pageTable[pageIndex].valid = FALSE;   //not load in main_memory
+                pageTable[pageIndex].use = FALSE;
+                pageTable[pageIndex].dirty = FALSE;
+                pageTable[pageIndex].readOnly = FALSE;
+                pageTable[pageIndex].ID = ID;
+                executable->ReadAt(buf, PageSize, noffH.initData.inFileAddr + (pageIndex * PageSize));
+                kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+                // swap->WriteAt(buf, PageSize, i * PageSize);
+
+                cout << "used virtual page: " << k << " at pageTable " << pageIndex << endl;
+            }
+        }
     }
 
     delete executable; // close file
