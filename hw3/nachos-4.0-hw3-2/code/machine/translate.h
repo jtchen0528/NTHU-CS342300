@@ -20,7 +20,7 @@
 
 #include "copyright.h"
 #include "utility.h"
-
+#include "addrspace.h"
 // The following class defines an entry in a translation table -- either
 // in a page table or a TLB.  Each entry defines a mapping from one
 // virtual page to one physical page.
