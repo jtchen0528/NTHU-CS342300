@@ -48,16 +48,4 @@ public:
   int ID;
 };
 
-class FrameInfoEntry
-{
-public:
-                             //  start of "mainMemory"
-  bool valid;                // If this bit is set, the translation is ignored.
-                             // (In other words, the entry hasn't been initialized.)
-  unsigned int vpn;
-
-  AddrSpace *process;
-
-};
-
 #endif
