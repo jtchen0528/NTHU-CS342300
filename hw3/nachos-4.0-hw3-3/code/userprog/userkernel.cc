@@ -175,10 +175,10 @@ void UserProgKernel::SwapPage(int victim, int vpn)
 	bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
 	swap->ReadAt(buf_m, PageSize, VirPage * PageSize);
 
-	// machine->pageTable[vpn].physicalPage = victim;
-	// machine->pageTable[vpn].valid = TRUE;
+	machine->pageTable[vpn].physicalPage = victim;
+	machine->pageTable[vpn].valid = TRUE;
 
-	// machine->pageTable[vpn].physicalPage = victim;
-	// machine->pageTable[vpn].valid = FALSE;
+	machine->pageTable[victim].virtualPage = VirPage;
+	machine->pageTable[victim].valid = FALSE;
 
 }
