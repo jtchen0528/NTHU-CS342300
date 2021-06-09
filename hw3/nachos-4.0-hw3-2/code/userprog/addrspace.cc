@@ -252,6 +252,7 @@ void AddrSpace::InitRegisters()
 
 void AddrSpace::SaveState()
 {
+    DEBUG(dbgAddr, "Save state numPages: " << numPages);
     pageTable = kernel->machine->pageTable;
     numPages = kernel->machine->pageTableSize;
 }
@@ -266,6 +267,7 @@ void AddrSpace::SaveState()
 
 void AddrSpace::RestoreState()
 {
+    DEBUG(dbgAddr, "Save state numPages: " << numPages);
     kernel->machine->pageTable = pageTable;
     kernel->machine->pageTableSize = numPages;
 }
