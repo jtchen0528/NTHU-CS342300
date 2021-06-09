@@ -54,6 +54,8 @@ ExceptionHandler(ExceptionType which)
 	int	type = kernel->machine->ReadRegister(2);
 	int	val, status;
 
+	// int VirAddr, BadPageNum, victim;
+
     switch (which) {
 	case SyscallException:
 	    switch(type) {
@@ -113,15 +115,15 @@ ExceptionHandler(ExceptionType which)
 	    }
 	    break;
 
-	case PageFaultException:
-		vAddr = kernel->machine->ReadRegister(BadVAddrReg);
-		kernel->stats->numPageFaults ++;
-		BadPage = (vAddr/PageSize);
-		victim = RandomNumber()%NumPhysPages;
-		cout << "PageFaultHandle" << endl;
-		cout << "current victim: " << victim << " vpn: " << BadPage << endl;
-		kernel->SwapPage(victim, BadPage);
-		break;
+	// case PageFaultException:
+	// 	VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
+	// 	kernel->stats->numPageFaults++;
+	// 	BadPageNum = VirAddr / PageSize;
+	// 	victim = RandomNumber() % NumPhysPages;
+    //     DEBUG(dbgAddr, "Page Fault: Physical Page " << victim << " is moved out for Virtual Page " << BadPageNum);
+	// 	kernel->SwapPage(victim, BadPageNum);
+	// 	return;
+	// 	break;
 
 	default:
 	    cerr << "Unexpected user mode exception" << which << "\n";

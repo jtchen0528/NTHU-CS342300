@@ -10,7 +10,6 @@
 #include "synchconsole.h"
 #include "userkernel.h"
 #include "synchdisk.h"
-//#include "addrspace.h"
 
 //----------------------------------------------------------------------
 // UserProgKernel::UserProgKernel
@@ -64,21 +63,6 @@ void UserProgKernel::Initialize()
 	machine = new Machine(debugUserProg);
 	fileSystem = new FileSystem();
 
-	frametable = new FrameInfoEntry[NumPhysPages];
-	swaptable = new FrameInfoEntry[NumPhysPages];
-
-	for (unsigned int i = 0; i < NumPhysPages; i++)
-	{
-		frametable[i].valid = FALSE;
-		frametable[i].process = NULL;
-	}
-
-	for (unsigned int i = 0; i < NumPhysPages; i++)
-	{
-		swaptable[i].valid = FALSE;
-		swaptable[i].process = NULL;
-	}
-
 	fileSystem->Create("swapfile");
 
 #ifdef FILESYS
@@ -96,66 +80,12 @@ UserProgKernel::~UserProgKernel()
 {
 	delete fileSystem;
 	delete machine;
-	delete frametable;
-	delete swaptable;
+
+	fileSystem->Remove("swapfile");
+
 #ifdef FILESYS
 	delete synchDisk;
 #endif
-}
-
-unsigned int UserProgKernel::FindVirPage(unsigned int vpn, AddrSpace *process)
-{
-	unsigned int i = 0;
-	for (i = 0; i < NumPhysPages; i++)
-	{
-		if (swaptable[i].valid == FALSE)
-		{
-			swaptable[i].valid = TRUE;
-			swaptable[i].vpn = vpn;
-			swaptable[i].process = process;
-			return i;
-		}
-	}
-	return 0;
-}
-
-void UserProgKernel::SwapPage(int victim, int vpn)
-{
-	OpenFile *swap = fileSystem->Open("swapfile");
-	char *buf_m;
-	char *buf_m;
-	AddrSpace *swap_table_pro;
-	int swap_table_vpn;
-	AddrSpace *frame_table_pro;
-	int frame_table_vpn;
-	int swap_index;
-
-	swap_index = machine->pageTable[vpn].virtualPage;
-	buf_m = new char[PageSize];
-	buf_v = new char[PageSize];
-
-	bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
-	swap->ReadAt(buf_v, PageSize, vpn * PageSize);
-
-	bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
-	swap->WriteAt(buf_m, PageSize, vpn * PageSize);
-
-	swap_table_pro = swaptable[swap_index].process;
-	swap_table_vpn = swaptable[swap_index].vpn;
-	frame_table_pro = frametable[victim].process;
-	frame_table_vpn = frametable[victim].vpn;
-
-	swap_table_pro->pageTable[vpn].valid = TRUE;
-	swap_table_pro->pageTable[vpn].physicalPage = victim;
-
-	frame_table_pro->pageTable[frame_table_vpn].valid = TRUE;
-	frame_table_pro->pageTable[frame_table_vpn].virtualPage = vpn;
-
-	swaptable[swap_index].process = frame_table_pro;
-	swaptable[swap_index].vpn = frame_table_vpn;
-
-	frametable[victim].process = swap_table_pro;
-	frametable[victim].vpn = swap_table_vpn;
 }
 
 //----------------------------------------------------------------------
@@ -225,4 +155,30 @@ void UserProgKernel::SelfTest()
 */
 
 	//	cout << "This is self test message from UserProgKernel\n" ;
+}
+
+void UserProgKernel::SwapPage(int victim, int vpn)
+{
+
+	DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
+	DEBUG(dbgAddr, "Total Physical Page: " << NumPhysPages << ", Total Virtual Page: " << NumVirPages);
+
+	OpenFile *swap = fileSystem->Open("swapfile");
+	char *buf_m, *buf_v;
+	int VirPage = machine->pageTable[vpn].virtualPage;
+	buf_m = new char[PageSize];
+	buf_v = new char[PageSize];
+
+	bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
+	swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+
+	bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
+	swap->ReadAt(buf_m, PageSize, VirPage * PageSize);
+
+	machine->pageTable[vpn].physicalPage = victim;
+	machine->pageTable[vpn].valid = TRUE;
+
+	machine->pageTable[victim].virtualPage = VirPage;
+	machine->pageTable[victim].valid = FALSE;
+
 }

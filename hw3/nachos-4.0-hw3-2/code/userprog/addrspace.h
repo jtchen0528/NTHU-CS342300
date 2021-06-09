@@ -30,6 +30,9 @@ public:
 
   void SaveState();    // Save/restore address space-specific
   void RestoreState(); // info on a context switch
+
+  static bool usedPhyPage[NumPhysPages];
+  static bool usedVirPage[NumVirPages];
   int ID;
 
 private:
@@ -43,7 +46,6 @@ private:
 
   void InitRegisters(); // Initialize user-level CPU registers,
                         // before jumping to user code
-  bool pt_is_load;
 };
 
 #endif // ADDRSPACE_H
