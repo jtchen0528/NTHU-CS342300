@@ -291,9 +291,6 @@ void AddrSpace::SaveState()
 
 void AddrSpace::RestoreState()
 {
-    if (pt_is_load)
-    {
-        kernel->machine->pageTable = pageTable;
-        kernel->machine->pageTableSize = numPages;
-    }
+    kernel->machine->pageTable = pageTable;
+    kernel->machine->pageTableSize = numPages;
 }
