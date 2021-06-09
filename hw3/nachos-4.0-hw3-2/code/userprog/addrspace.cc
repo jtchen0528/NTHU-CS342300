@@ -118,6 +118,8 @@ bool AddrSpace::Load(char *fileName)
 
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
     int pageIndex = 0;
+    unsigned int FindVirPages, FindPhyPages;
+
     // then, copy in the code and data segments into memory
     if (noffH.code.size > 0)
     {
@@ -125,7 +127,7 @@ bool AddrSpace::Load(char *fileName)
         DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
         for (pageIndex = 0; pageIndex < divRoundUp(noffH.code.size, PageSize); pageIndex++)
         {
-            unsigned int FindPhyPages = 0;
+            FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
             {
                 FindPhyPages++;
@@ -148,7 +150,7 @@ bool AddrSpace::Load(char *fileName)
                 char *buf;
                 buf = new char[PageSize];
 
-                unsigned int FindVirPages;
+                FindVirPages = 0;
                 while (kernel->machine->usedVirPage[FindVirPages] == TRUE)
                 {
                     FindVirPages++;
@@ -180,7 +182,7 @@ bool AddrSpace::Load(char *fileName)
 
         for (; pageIndex < divRoundUp(noffH.initData.size, PageSize); pageIndex++)
         {
-            unsigned int FindPhyPages = 0;
+            FindPhyPages = 0;
             while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
             {
                 FindPhyPages++;
@@ -203,7 +205,7 @@ bool AddrSpace::Load(char *fileName)
                 char *buf;
                 buf = new char[PageSize];
 
-                unsigned int FindVirPages;
+                FindVirPages = 0;
                 while (kernel->machine->usedVirPage[FindVirPages] == TRUE)
                 {
                     FindVirPages++;
@@ -228,7 +230,7 @@ bool AddrSpace::Load(char *fileName)
 
     for (; pageIndex < numPages; pageIndex++)
     {
-        unsigned int FindPhyPages = 0;
+        FindPhyPages = 0;
         while (kernel->machine->usedPhyPage[FindPhyPages] == TRUE)
         {
             FindPhyPages++;
@@ -251,7 +253,7 @@ bool AddrSpace::Load(char *fileName)
             char *buf;
             buf = new char[PageSize];
 
-            unsigned int FindVirPages;
+            FindVirPages = 0;
             while (kernel->machine->usedVirPage[FindVirPages] == TRUE)
             {
                 FindVirPages++;
