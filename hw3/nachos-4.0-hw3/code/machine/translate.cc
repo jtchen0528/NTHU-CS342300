@@ -318,9 +318,9 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 main_tab[victim] = &pageTable[vpn];
                 // fifo = fifo + 1;               //for fifo
                 printf("page replacement finished\n");
+                // return PageFaultException;
             }
 
-            //return PageFaultException;
         }
 
         entry = &pageTable[vpn];
@@ -360,7 +360,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     if (writing)
         entry->dirty = TRUE;
     *physAddr = pageFrame * PageSize + offset;
-    // ASSERT((*physAddr >= 0) && ((*physAddr + size) <= MemorySize));
+    ASSERT((*physAddr >= 0) && ((*physAddr + size) <= MemorySize));
     DEBUG(dbgAddr, "phys addr = " << *physAddr);
     return NoException;
 }
