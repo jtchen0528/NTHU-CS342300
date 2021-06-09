@@ -229,12 +229,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
         }
         else if (!pageTable[vpn].valid)
         {
+            OpenFile *swap = kernel->fileSystem->Open("swapfile");
+
             DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             //hanle page fault
             // DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
-            
-            OpenFile *swap = kernel->fileSystem->Open("swapfile");
-            
             printf("page fault\n");
             kernel->stats->numPageFaults++;
             j = 0;
@@ -257,9 +256,10 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 pageTable[vpn].count++; //for LRU
                 // pageTable[vpn].reference_bit = FALSE; //for second chance algo.
 
-                //kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
-                swap->ReadAt(buf, PageSize, vpn * PageSize);
+                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
                 bcopy(buf, &mainMemory[j * PageSize], PageSize);
+                // swap->ReadAt(buf, PageSize, vpn * PageSize);
+                // bcopy(buf, &mainMemory[j * PageSize], PageSize);
             }
             else
             {
@@ -301,9 +301,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 //get the page victm and save in the disk
                 bcopy(&mainMemory[victim * PageSize], buf_1, PageSize);
-                swap->ReadAt(buf_2, PageSize, vpn * PageSize);
+                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf_2);
+                // swap->ReadAt(buf_2, PageSize, vpn * PageSize);
                 bcopy(buf_2, &mainMemory[victim * PageSize], PageSize);
-	            swap->WriteAt(buf_1, PageSize, vpn * PageSize);
+                kernel->vm_Disk->WriteSector(pageTable[vpn].virtualPage, buf_1);
+                // swap->WriteAt(buf_1, PageSize, vpn * PageSize);
 
                 main_tab[victim]->virtualPage = pageTable[vpn].virtualPage;
                 main_tab[victim]->valid = FALSE;
