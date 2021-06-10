@@ -169,6 +169,8 @@ void UserProgKernel::SwapPage(int vpn)
 
 	int VirPage = machine->pageTable[vpn].virtualPage;
 
+	OpenFile *swap = fileSystem->Open("swapfile");
+
 	victim = 0;
 	while (kernel->machine->usedPhyPage[victim] != FALSE && victim < NumPhysPages)
 	{
@@ -188,8 +190,6 @@ void UserProgKernel::SwapPage(int vpn)
 	else
 	{
 		victim = RandomNumber() % NumPhysPages;
-
-		OpenFile *swap = fileSystem->Open("swapfile");
 
 		bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
 		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
