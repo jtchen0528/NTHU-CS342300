@@ -57,7 +57,6 @@ enum PageReplacementMode
 	FIFO,
 	Random,
 	SecondChance,
-	ReadOnlyException,
 	LRU
 };
 
