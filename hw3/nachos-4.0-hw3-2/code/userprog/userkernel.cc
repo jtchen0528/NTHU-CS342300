@@ -177,10 +177,11 @@ void UserProgKernel::SwapPage(int vpn)
 		victim++;
 	}
 
-	DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
-
 	if (victim < NumPhysPages)
 	{
+
+		DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
+
 		kernel->machine->usedPhyPage[victim] = TRUE;
 		machine->pageTable[vpn].physicalPage = victim;
 		machine->pageTable[vpn].valid++;
@@ -190,6 +191,8 @@ void UserProgKernel::SwapPage(int vpn)
 	else
 	{
 		victim = RandomNumber() % NumPhysPages;
+
+		DEBUG(dbgAddr, "Swapping Physical Page " << victim << " (Random) and Page " << vpn);
 
 		bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
 		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
