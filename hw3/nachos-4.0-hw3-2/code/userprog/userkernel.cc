@@ -157,28 +157,50 @@ void UserProgKernel::SelfTest()
 	//	cout << "This is self test message from UserProgKernel\n" ;
 }
 
-void UserProgKernel::SwapPage(int victim, int vpn)
+void UserProgKernel::SwapPage(int vpn)
 {
+	DEBUG(dbgAddr, "Finding Victim Page for " << vpn);
 
-	DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
-	DEBUG(dbgAddr, "Total Physical Page: " << NumPhysPages << ", Total Virtual Page: " << NumVirPages);
+	int victim;
 
-	OpenFile *swap = fileSystem->Open("swapfile");
 	char *buf_m, *buf_v;
-	int VirPage = machine->pageTable[vpn].virtualPage;
 	buf_m = new char[PageSize];
 	buf_v = new char[PageSize];
 
-	bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
-	swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+	int VirPage = machine->pageTable[vpn].virtualPage;
 
-	bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
-	swap->ReadAt(buf_m, PageSize, VirPage * PageSize);
+	victim = 0;
+	while (kernel->machine->usedPhyPage[victim] != FALSE && victim < NumPhysPages)
+	{
+		victim++;
+	}
 
-	machine->pageTable[vpn].physicalPage = victim;
-	machine->pageTable[vpn].valid = TRUE;
+	DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
 
-	machine->pageTable[victim].virtualPage = VirPage;
-	machine->pageTable[victim].valid = FALSE;
+	if (victim < NumPhysPages)
+	{
+		kernel->machine->usedPhyPage[victim] = TRUE;
+		pageTable[vpn].physicalPage = victim;
+		pageTable[vpn].valid++;
+		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+		bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
+	}
+	else
+	{
+		victim = RandomNumber() % NumPhysPages;
 
+		OpenFile *swap = fileSystem->Open("swapfile");
+
+		bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
+		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+
+		bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
+		swap->WriteAt(buf_m, PageSize, VirPage * PageSize);
+
+		machine->pageTable[vpn].physicalPage = victim;
+		machine->pageTable[vpn].valid = TRUE;
+
+		machine->pageTable[victim].virtualPage = VirPage;
+		machine->pageTable[victim].valid = FALSE;
+	}
 }

@@ -29,7 +29,7 @@ class UserProgKernel : public ThreadedKernel {
 
     void SelfTest();		// test whether kernel is working
 
-    void SwapPage(int victim, int vpn);
+    void SwapPage(int vpn);
 
 // These are public for notational convenience.
     Machine *machine;

@@ -232,8 +232,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             OpenFile *swap = kernel->fileSystem->Open("swapfile");
 
             DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
-            //hanle page fault
-            // DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
+            //handle page fault
             printf("page fault\n");
             kernel->stats->numPageFaults++;
             j = 0;
