@@ -180,8 +180,8 @@ void UserProgKernel::SwapPage(int vpn)
 	if (victim < NumPhysPages)
 	{
 		kernel->machine->usedPhyPage[victim] = TRUE;
-		pageTable[vpn].physicalPage = victim;
-		pageTable[vpn].valid++;
+		machine->pageTable[vpn].physicalPage = victim;
+		machine->pageTable[vpn].valid++;
 		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
 		bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
 	}
