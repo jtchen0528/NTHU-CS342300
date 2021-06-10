@@ -132,6 +132,10 @@ class Machine {
     TranslationEntry *pageTable;
     unsigned int pageTableSize;
     bool ReadMem(int addr, int size, int* value);
+
+	unsigned int *virtMemorySpace;
+	unsigned int usedSectorNum = 0;
+
   private:
 
 // Routines internal to the machine simulation -- DO NOT call these directly
