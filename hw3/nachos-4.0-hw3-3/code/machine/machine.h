@@ -150,7 +150,7 @@ public:
 	TranslationEntry *SearchPageTable(unsigned int vpn, unsigned *pageframe);
 	TranslationEntry *PageReplacement(PageReplacementMode mode, unsigned int vpn, unsigned *pageframe);
 	void SwapIn(unsigned int virtPage, unsigned int physPage);
-	void SwapOut(unsigned int physPage, unsigned int virtPage)
+	void SwapOut(unsigned int physPage, unsigned int virtPage);
 
 private:
 	// Routines internal to the machine simulation -- DO NOT call these directly
