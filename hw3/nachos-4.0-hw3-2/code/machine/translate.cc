@@ -215,12 +215,13 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 	{ // => page table => vpn is index into table
 		if (vpn >= pageTableSize)
 		{
-			DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
+			DEBUG(dbgAddr, "Illegal virtual addr # " << virtAddr);
+			cout << "Illegal virtual addr # " << virtAddr << endl;
 			return AddressErrorException;
 		}
 		else if (!pageTable[vpn].valid)
 		{
-			DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
+			DEBUG(dbgAddr, "Invalid virtual addr # " << virtAddr << " at page " << vpn);
 			kernel->machine->WriteRegister(BadVAddrReg, vpn);
 			return PageFaultException;
 		}
