@@ -135,7 +135,7 @@ bool AddrSpace::Load(char *fileName)
         PageIndex++;
     }
 
-    int offset = noffH.code.size - PageIndex * PageSize;
+    int offset = noffH.code.size - (PageIndex - 1) * PageSize;
     cout << "offset = " << offset << endl;
 
     if (noffH.initData.size == 0) {
