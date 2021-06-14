@@ -142,7 +142,7 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.initData.size == 0)
     {
-        while (PageIndex * PageSize < noffH.code.size)
+        while (PageIndex < numPages)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0, PageIndex);
             PageIndex++;
@@ -154,12 +154,24 @@ bool AddrSpace::Load(char *fileName)
         PageIndex++;
 
         int InitDataPageIndex = PageIndex;
-        while (PageIndex < numPages)
+        while (PageIndex * PageSize < noffH.code.size + noffH.initData.size)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
             // printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
             PageIndex++;
         }
+
+        int NewOffset = noffH.code.size + noffH.initData.size - PageIndex * PageSize;
+
+        PutInPageTableWithOffset2(PageIndex, executable, pageTable, noffH.initData.inFileAddr + PageSize - offset, noffH.code.inFileAddr, NewOffset, PageIndex - InitDataPageIndex);
+        PageIndex++;
+
+        while (PageIndex < numPages)
+        {
+            PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0, PageIndex);
+            PageIndex++;
+        }
+        
     }
 
     // if (noffH.code.size > 0)
@@ -285,6 +297,61 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
         kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
     }
 }
+
+void AddrSpace::PutInPageTableWithOffset2(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset, int i_2)
+{
+    int j = 0;
+    while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
+    {
+        j++;
+    }
+
+    //if memory is enough,just put data in without using virtual memory
+    if (j < NumPhysPages)
+    {
+        kernel->machine->usedPhyPage[j] = TRUE;
+        kernel->machine->PhyPageName[j] = ID;
+        kernel->machine->main_tab[j] = &pageTable[i];
+        pageTable[i].physicalPage = j;
+        pageTable[i].valid = TRUE;
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;
+        pageTable[i].ID = ID;
+        pageTable[i].count++;               //for LRU,count+1 when save in memory
+        pageTable[i].reference_bit = FALSE; //for second chance algo.
+        executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), offset, Addr + (i_2 * PageSize));
+        executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize + offset]), PageSize - offset, Addr2 + (i * PageSize));
+        // cout << "first read at: " << j * PageSize << " for " << offset << " bits, " << endl;
+        // cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, " << endl;
+    }
+    //Use virtual memory when memory isn't enough
+    else
+    {
+        char *buf, *buf1, *buf2;
+        buf1 = new char[offset];
+        buf2 = new char[PageSize - offset];
+        int k = 0;
+        while (kernel->machine->usedvirPage[k] != FALSE)
+        {
+            k++;
+        }
+
+        kernel->machine->usedvirPage[k] = true;
+        pageTable[i].virtualPage = k; //record which virtualpage you save
+        pageTable[i].valid = FALSE;   //not load in main_memory
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;
+        pageTable[i].ID = ID;
+        executable->ReadAt(buf1, offset, Addr + (i_2 * PageSize));
+        executable->ReadAt(buf2, PageSize - offset, Addr2 + (i * PageSize));
+        buf = concat(buf1, buf2, offset);
+        kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+    }
+}
+
+
 
 char *AddrSpace::concat(const char *s1, const char *s2, int offset)
 {
