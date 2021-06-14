@@ -1,3 +1,34 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@jtchen0528 
+jtchen0528
+/
+Operating-System
+1
+00
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+Operating-System/hw3/nachos-4.0-hw3-Sol-with-Synchdisk/code/userprog/addrspace.cc
+@jtchen0528
+jtchen0528 udpate
+Latest commit f67221f 1 hour ago
+ History
+ 1 contributor
+386 lines (338 sloc)  13.7 KB
+  
 // addrspace.cc
 //	Routines to manage address spaces (executing user programs).
 //
@@ -142,7 +173,7 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.initData.size == 0)
     {
-        while (PageIndex < numPages)
+        while (PageIndex * PageSize < noffH.code.size)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0);
             PageIndex++;
@@ -150,25 +181,15 @@ bool AddrSpace::Load(char *fileName)
     }
     else
     {
+
         PutInPageTableWithOffset(PageIndex, executable, pageTable, noffH.code.inFileAddr, noffH.initData.inFileAddr, offset);
         PageIndex++;
 
-        while (PageIndex * PageSize < noffH.code.size + noffH.initData.size)
+        while (PageIndex < numPages)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset);
             PageIndex++;
         }
-
-        int initData_offset = noffH.code.size + noffH.initData.size - (PageIndex - 1) * PageSize;
-        cout << "initData offset = " << initData_offset << endl;
-        PutInPageTableLast(PageIndex, executable, pageTable, noffH.initData.inFileAddr, offset, initData_offset);
-
-        while (PageIndex < numPages)
-        {
-            PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0);
-            PageIndex++;
-        }
-
     }
 
     // if (noffH.code.size > 0)
@@ -295,53 +316,6 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
     }
 }
 
-void AddrSpace::PutInPageTableLast(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start, int offset)
-{
-    int j = 0;
-    while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
-    {
-        j++;
-    }
-
-    //if memory is enough,just put data in without using virtual memory
-    if (j < NumPhysPages)
-    {
-        kernel->machine->usedPhyPage[j] = TRUE;
-        kernel->machine->PhyPageName[j] = ID;
-        kernel->machine->main_tab[j] = &pageTable[i];
-        pageTable[i].physicalPage = j;
-        pageTable[i].valid = TRUE;
-        pageTable[i].use = FALSE;
-        pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;
-        pageTable[i].ID = ID;
-        pageTable[i].count++;               //for LRU,count+1 when save in memory
-        pageTable[i].reference_bit = FALSE; //for second chance algo.
-        executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), offset, Start + Addr + (i * PageSize));
-    }
-    //Use virtual memory when memory isn't enough
-    else
-    {
-        char *buf;
-        buf = new char[offset];
-        int k = 0;
-        while (kernel->machine->usedvirPage[k] != FALSE)
-        {
-            k++;
-        }
-
-        kernel->machine->usedvirPage[k] = true;
-        pageTable[i].virtualPage = k; //record which virtualpage you save
-        pageTable[i].valid = FALSE;   //not load in main_memory
-        pageTable[i].use = FALSE;
-        pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;
-        pageTable[i].ID = ID;
-        executable->ReadAt(buf, offset, Start + Addr + (i * PageSize));
-        kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
-    }
-}
-
 char *AddrSpace::concat(const char *s1, const char *s2, int offset)
 {
     char *result = new char[PageSize]; // +1 for the null-terminator
@@ -441,3 +415,16 @@ void AddrSpace::RestoreState()
     kernel->machine->pageTable = pageTable;
     kernel->machine->pageTableSize = numPages;
 }
+© 2021 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Loading complete
