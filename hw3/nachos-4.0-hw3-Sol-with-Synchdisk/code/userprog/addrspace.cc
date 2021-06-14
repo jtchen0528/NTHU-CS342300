@@ -280,6 +280,16 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
     }
 }
 
+char* AddrSpace::concat(const char *s1, const char *s2, int offset)
+{
+    char *result = new char[PageSize]; // +1 for the null-terminator
+    // in real code you would check for errors in malloc here
+    memcpy(result, s1, offset);
+    memcpy(result + offset, s2, PageSize - offset); // +1 to copy the null-terminator
+    return result;
+}
+
+
 //----------------------------------------------------------------------
 // AddrSpace::Execute
 // 	Run a user program.  Load the executable into memory, then
@@ -306,15 +316,6 @@ void AddrSpace::Execute(char *fileName)
     ASSERTNOTREACHED(); // machine->Run never returns;
                         // the address space exits
                         // by doing the syscall "exit"
-}
-
-char* AddrSpace::concat(const char *s1, const char *s2, int offset)
-{
-    char *result = malloc(PageSize); // +1 for the null-terminator
-    // in real code you would check for errors in malloc here
-    memcpy(result, s1, offset);
-    memcpy(result + offset, s2, PageSize - offset); // +1 to copy the null-terminator
-    return result;
 }
 
 //----------------------------------------------------------------------
