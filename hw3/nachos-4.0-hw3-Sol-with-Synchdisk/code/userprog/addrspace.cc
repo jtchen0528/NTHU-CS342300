@@ -131,13 +131,13 @@ bool AddrSpace::Load(char *fileName)
     // then, copy in the code and data segments into memory
 
     int PageIndex = 0;
-    while (PageIndex * PageSize < noffH.code.size)
+    while ((PageIndex + 1) * PageSize < noffH.code.size)
     {
         PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0, PageIndex);
         PageIndex++;
     }
 
-    int offset = noffH.code.size - (PageIndex - 1) * PageSize;
+    int offset = noffH.code.size - PageIndex * PageSize;
     // cout << "offset = " << offset << endl;
 
     if (noffH.initData.size == 0)
@@ -154,7 +154,7 @@ bool AddrSpace::Load(char *fileName)
         PageIndex++;
 
         int InitDataPageIndex = PageIndex;
-        while (PageIndex * PageSize < noffH.code.size + noffH.initData.size)
+        while ((PageIndex + 1) * PageSize < noffH.code.size + noffH.initData.size)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
             printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
