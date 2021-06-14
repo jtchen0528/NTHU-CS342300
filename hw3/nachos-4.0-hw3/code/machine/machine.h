@@ -27,7 +27,7 @@
 
 // Definitions related to the size, and format of user memory
 
-const unsigned int PageSize = 1024; // set the page size equal to
+const unsigned int PageSize = 128; // set the page size equal to
 								   // the disk sector size, for simplicity
 
 const unsigned int NumPhysPages = 32;
@@ -92,8 +92,8 @@ class Machine
 {
 public:
 	Machine(bool debug); // Initialize the simulation of the hardware
-		// for running user programs
-	~Machine(); // De-allocate the data structures
+						 // for running user programs
+	~Machine();			 // De-allocate the data structures
 
 	// Routines callable by the Nachos kernel
 	void Run(); // Run a user program
@@ -110,7 +110,7 @@ public:
 	// are in terms of these data structures (plus the CPU registers).
 
 	char *mainMemory; // physical memory to store user program,
-		// code and data, while executing
+					  // code and data, while executing
 
 	// NOTE: the hardware translation of virtual addresses in the user program
 	// to physical addresses (relative to the beginning of "mainMemory")
@@ -136,15 +136,10 @@ public:
 	TranslationEntry *pageTable;
 	unsigned int pageTableSize;
 	bool ReadMem(int addr, int size, int *value);
-    bool usedPhyPage[NumPhysPages];//record which the page in the main memory is used.
-    bool usedvirPage[NumVirPages];
-    int  ID_num;
-    int PhyPageName[NumPhysPages];
-    int count[NumPhysPages]; //for LRU
-    bool reference_bit[NumPhysPages];//for second chance algo.
-    int sector_number;//record which sector the disk is saving
 
-    TranslationEntry *main_tab[NumPhysPages];
+    bool usedPhyPage[NumPhysPages]; //record which the page in the main memory is used.
+    bool usedVirPage[NumVirPages];
+	int ID_num;
 
 private:
 	// Routines internal to the machine simulation -- DO NOT call these directly
@@ -178,8 +173,8 @@ private:
 
 	int registers[NumTotalRegs]; // CPU registers, for executing user programs
 
-	bool singleStep; // drop back into the debugger after each
-		// simulated instruction
+	bool singleStep;  // drop back into the debugger after each
+					  // simulated instruction
 	int runUntilTime; // drop back into the debugger when simulated
 					  // time reaches this value
 

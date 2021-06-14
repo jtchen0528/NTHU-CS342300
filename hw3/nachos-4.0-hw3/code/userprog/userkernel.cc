@@ -63,8 +63,6 @@ void UserProgKernel::Initialize()
 	machine = new Machine(debugUserProg);
 	fileSystem = new FileSystem();
 
-	vm_Disk = new SynchDisk("New Disk");
-
 	fileSystem->Create("swapfile");
 
 #ifdef FILESYS
@@ -82,7 +80,7 @@ UserProgKernel::~UserProgKernel()
 {
 	delete fileSystem;
 	delete machine;
-	delete vm_Disk;
+
 	fileSystem->Remove("swapfile");
 
 #ifdef FILESYS
@@ -157,4 +155,55 @@ void UserProgKernel::SelfTest()
 */
 
 	//	cout << "This is self test message from UserProgKernel\n" ;
+}
+
+void UserProgKernel::SwapPage(int vpn)
+{
+	DEBUG(dbgAddr, "Finding Victim Page for " << vpn);
+
+	int victim;
+
+	char *buf_m, *buf_v;
+	buf_m = new char[PageSize];
+	buf_v = new char[PageSize];
+
+	int VirPage = machine->pageTable[vpn].virtualPage;
+
+	OpenFile *swap = fileSystem->Open("swapfile");
+
+	victim = 0;
+	while (kernel->machine->usedPhyPage[victim] != FALSE && victim < NumPhysPages)
+	{
+		victim++;
+	}
+
+	if (victim < NumPhysPages)
+	{
+
+		DEBUG(dbgAddr, "Swapping Physical Page " << victim << " and Page " << vpn);
+
+		kernel->machine->usedPhyPage[victim] = TRUE;
+		machine->pageTable[vpn].physicalPage = victim;
+		machine->pageTable[vpn].valid++;
+		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+		bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
+	}
+	else
+	{
+		victim = RandomNumber() % NumPhysPages;
+
+		DEBUG(dbgAddr, "Swapping Physical Page " << victim << " (Random) and Page " << vpn);
+
+		bcopy(&(machine->mainMemory[victim]), buf_m, PageSize);
+		swap->ReadAt(buf_v, PageSize, VirPage * PageSize);
+
+		bcopy(buf_v, &(machine->mainMemory[victim]), PageSize);
+		swap->WriteAt(buf_m, PageSize, VirPage * PageSize);
+
+		machine->pageTable[vpn].physicalPage = victim;
+		machine->pageTable[vpn].valid = TRUE;
+
+		machine->pageTable[victim].virtualPage = VirPage;
+		machine->pageTable[victim].valid = FALSE;
+	}
 }

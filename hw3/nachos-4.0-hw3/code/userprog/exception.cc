@@ -1,4 +1,4 @@
-// exception.cc
+// exception.cc 
 //	Entry point into the Nachos kernel from user programs.
 //	There are two kinds of things that can cause control to
 //	transfer back to here from user code:
@@ -9,7 +9,7 @@
 //
 //	exceptions -- The user code does something that the CPU can't handle.
 //	For instance, accessing memory that doesn't exist, arithmetic errors,
-//	etc.
+//	etc.  
 //
 //	Interrupts (which can also cause control to transfer from user
 //	code into the Nachos kernel) are handled elsewhere.
@@ -18,7 +18,7 @@
 // Everything else core dumps.
 //
 // Copyright (c) 1992-1996 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation
+// All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
@@ -39,41 +39,35 @@
 //		arg3 -- r6
 //		arg4 -- r7
 //
-//	The result of the system call, if any, must be put back into r2.
+//	The result of the system call, if any, must be put back into r2. 
 //
 // And don't forget to increment the pc before returning. (Or else you'll
 // loop making the same system call forever!
 //
-//	"which" is the kind of exception.  The list of possible exceptions
+//	"which" is the kind of exception.  The list of possible exceptions 
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-void ExceptionHandler(ExceptionType which)
+void
+ExceptionHandler(ExceptionType which)
 {
-	int type = kernel->machine->ReadRegister(2);
-	int val, status;
+	int	type = kernel->machine->ReadRegister(2);
+	int	val, status;
 
-	// if (type == 10)
-	// {
-	// 	type = 1;
-	// }
+	int VirAddr;
 
-	cout << "which = " << which << " type = " << type << endl;
-
-	switch (which)
-	{
+    switch (which) {
 	case SyscallException:
-		switch (type)
-		{
+	    switch(type) {
 		case SC_Halt:
-			DEBUG(dbgAddr, "Shutdown, initiated by user program.\n");
-			kernel->interrupt->Halt();
-			break;
+		    DEBUG(dbgAddr, "Shutdown, initiated by user program.\n");
+   		    kernel->interrupt->Halt();
+		    break;
 		case SC_PrintInt:
-			val = kernel->machine->ReadRegister(4);
-			cout << "Print integer:" << val << endl;
+			val=kernel->machine->ReadRegister(4);
+			cout << "Print integer:" <<val << endl;
 			return;
-		/*		case SC_Exec:
+/*		case SC_Exec:
 			DEBUG(dbgAddr, "Exec\n");
 			val = kernel->machine->ReadRegister(4);
 			kernel->StringCopy(tmpStr, retVal, 1024);
@@ -81,10 +75,9 @@ void ExceptionHandler(ExceptionType which)
 			val = kernel->Exec(val);
 			kernel->machine->WriteRegister(2, val);
 			return;
-*/
-		case SC_Exit:
+*/		case SC_Exit:
 			DEBUG(dbgAddr, "Program exit\n");
-			val = kernel->machine->ReadRegister(4);
+			val=kernel->machine->ReadRegister(4);
 			cout << "return value:" << val << endl;
 			kernel->currentThread->Finish();
 			break;
@@ -102,78 +95,36 @@ void ExceptionHandler(ExceptionType which)
 			break;
 		}
 
-
 		case SC_Create:
-			// DEBUG(dbgSys, "Start Create.\n");
 			val = kernel->machine->ReadRegister(4);
 			{
 				char *filename = &(kernel->machine->mainMemory[val]);
-				status = kernel->fileSystem->Create(filename);
+				status = kernel->fileSystem->Create(filename);	
 				kernel->machine->WriteRegister(2, (int)status);
 			}
 			return;
 			ASSERTNOTREACHED();
 			break;
-			//<TODO
-
-		case SC_Open:
-			// DEBUG(dbgSys, "Start Open.\n");
-			val = kernel->machine->ReadRegister(4);
-			{
-				char *filename = &(kernel->machine->mainMemory[val]);
-				status = kernel->fileSystem->OpenAFile(filename);
-				kernel->machine->WriteRegister(2, (int)status);
-			}
-			return;
-			ASSERTNOTREACHED();
-			break;
-
-		case SC_Write:
-			// DEBUG(dbgSys, "Start Open.\n");
-			val = kernel->machine->ReadRegister(4);
-
-			{
-				char *buffer = &(kernel->machine->mainMemory[val]);
-				int size = kernel->machine->ReadRegister(5);
-				status = kernel->fileSystem->WriteFile(buffer, size);
-				kernel->machine->WriteRegister(2, (int)status);
-			}
-			return;
-			ASSERTNOTREACHED();
-			break;
-
-		case SC_Read:
-			// DEBUG(dbgSys, "Start Open.\n");\
-
-			val = kernel->machine->ReadRegister(4);
-			{
-				char *buffer = &(kernel->machine->mainMemory[val]);
-				int size = kernel->machine->ReadRegister(5);
-				status = kernel->fileSystem->ReadFile(buffer, size);
-				kernel->machine->WriteRegister(2, (int)status);
-			}
-			return;
-			ASSERTNOTREACHED();
-			break;
-
-		case SC_Close:
-			// DEBUG(dbgSys, "Start Open.\n");
-			status = kernel->fileSystem->CloseFile();
-			kernel->machine->WriteRegister(2, (int)status);
-			return;
-			ASSERTNOTREACHED();
-			break;
-			//TODO>
-
+		//<TODO
+		
+		//TODO>
+		
 		default:
-			cerr << "Unexpected system call " << type << "\n";
-			break;
-		}
+		    cerr << "Unexpected system call " << type << "\n";
+ 		    break;
+	    }
+	    break;
+
+	case PageFaultException:
+		VirAddr = kernel->machine->ReadRegister(BadVAddrReg);
+		kernel->stats->numPageFaults++;
+		kernel->SwapPage(VirAddr / PageSize);
+		return;
 		break;
 
 	default:
-		cerr << "Unexpected user mode exception" << which << "\n";
-		break;
-	}
-	ASSERTNOTREACHED();
+	    cerr << "Unexpected user mode exception" << which << "\n";
+	    break;
+    }
+    ASSERTNOTREACHED();
 }
