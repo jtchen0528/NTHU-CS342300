@@ -40,6 +40,12 @@ int main()
 {
     int temp[1023], i;
 
+    for (i = 0; i < 64; i++) {
+        for (int j = 0; j < 16; j++) {
+            PrintInt(array[i * 64 + j]);
+        }
+    }
+
     merge(array, 0, 1023, temp);
 
     for(i=22; i<27; i++)

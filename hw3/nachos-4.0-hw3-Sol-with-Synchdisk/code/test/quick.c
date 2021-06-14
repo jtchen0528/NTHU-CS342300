@@ -40,6 +40,12 @@ int main()
 {
     int i;
 
+    for (i = 0; i < 64; i++) {
+        for (int j = 0; j < 16; j++) {
+            PrintInt(array[i * 64 + j]);
+        }
+    }
+
     quick(array, 0, 1023);
 
     for(i=816; i<821; i++)
