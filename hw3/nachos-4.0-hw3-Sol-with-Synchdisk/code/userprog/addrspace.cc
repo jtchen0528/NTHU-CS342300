@@ -163,8 +163,12 @@ bool AddrSpace::Load(char *fileName)
 
         int NewOffset = noffH.code.size + noffH.initData.size - PageIndex * PageSize;
 
+        cout << "test" << endl;
+
         PutInPageTableWithOffset2(PageIndex, executable, pageTable, noffH.initData.inFileAddr + PageSize - offset, noffH.code.inFileAddr, NewOffset, PageIndex - InitDataPageIndex);
         PageIndex++;
+
+        cout << "test2" << endl;
 
         while (PageIndex < numPages)
         {
