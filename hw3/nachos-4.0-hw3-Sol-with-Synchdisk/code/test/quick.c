@@ -40,6 +40,7 @@ int main()
 {
     int i;
 
+    int j;
     for (i = 0; i < 64; i++) {
         for (int j = 0; j < 16; j++) {
             PrintInt(array[i * 64 + j]);
