@@ -5,14 +5,6 @@ int main()
 {
     int i, j, tmp, is_swapped;
 
-    for (i = 0; i < 64; i++) {
-        for (j = 0; j < 16; j++) {
-            PrintInt(array[i * 16 + j]);
-            PrintInt(i * 16 + j);
-        }
-    }
-
-
     for(i=0; i<1024; i++)
     {
         is_swapped = 0;
