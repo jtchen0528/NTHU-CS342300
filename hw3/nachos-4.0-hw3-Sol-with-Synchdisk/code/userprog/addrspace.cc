@@ -138,7 +138,7 @@ bool AddrSpace::Load(char *fileName)
     }
 
     int offset = noffH.code.size - (PageIndex - 1) * PageSize;
-    cout << "offset = " << offset << endl;
+    // cout << "offset = " << offset << endl;
 
     if (noffH.initData.size == 0)
     {
@@ -156,8 +156,8 @@ bool AddrSpace::Load(char *fileName)
         int InitDataPageIndex = PageIndex;
         while (PageIndex < numPages)
         {
-            PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, 0, PageIndex - InitDataPageIndex);
-            printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, 0, PageIndex);
+            PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
+            // printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
             PageIndex++;
         }
     }
@@ -257,8 +257,8 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
         pageTable[i].reference_bit = FALSE; //for second chance algo.
         executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), offset, Addr + (i * PageSize));
         executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize + offset]), PageSize - offset, Addr2);
-        cout << "first read at: " << j * PageSize << " for " << offset << " bits, " << endl;
-        cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, " << endl;
+        // cout << "first read at: " << j * PageSize << " for " << offset << " bits, " << endl;
+        // cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, " << endl;
     }
     //Use virtual memory when memory isn't enough
     else
