@@ -109,6 +109,8 @@ bool AddrSpace::Load(char *fileName)
         SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
+    cout << "size for code, inidata, and uninitdata: " << noffH.code.size << ", " << noffH.initData.size << ", " << noffH.uninitData.size << endl;
+
     // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize; // we need to increase the size
                                                                                           // to leave room for the stack
@@ -138,13 +140,16 @@ bool AddrSpace::Load(char *fileName)
     int offset = noffH.code.size - (PageIndex - 1) * PageSize;
     cout << "offset = " << offset << endl;
 
-    if (noffH.initData.size == 0) {
+    if (noffH.initData.size == 0)
+    {
         while (PageIndex * PageSize < noffH.code.size)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0);
             PageIndex++;
         }
-    } else {
+    }
+    else
+    {
 
         PutInPageTableWithOffset(PageIndex, executable, pageTable, noffH.code.inFileAddr, noffH.initData.inFileAddr, offset);
         PageIndex++;
@@ -280,7 +285,7 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
     }
 }
 
-char* AddrSpace::concat(const char *s1, const char *s2, int offset)
+char *AddrSpace::concat(const char *s1, const char *s2, int offset)
 {
     char *result = new char[PageSize]; // +1 for the null-terminator
     // in real code you would check for errors in malloc here
@@ -288,7 +293,6 @@ char* AddrSpace::concat(const char *s1, const char *s2, int offset)
     memcpy(result + offset, s2, PageSize - offset); // +1 to copy the null-terminator
     return result;
 }
-
 
 //----------------------------------------------------------------------
 // AddrSpace::Execute
