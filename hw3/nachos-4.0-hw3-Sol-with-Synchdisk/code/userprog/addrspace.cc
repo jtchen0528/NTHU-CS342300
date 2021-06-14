@@ -109,7 +109,7 @@ bool AddrSpace::Load(char *fileName)
         SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
-    cout << "size for code, inidata, and uninitdata: " << noffH.code.size << ", " << noffH.initData.size << ", " << noffH.uninitData.size << endl;
+    // cout << "size for code, inidata, and uninitdata: " << noffH.code.size << ", " << noffH.initData.size << ", " << noffH.uninitData.size << endl;
 
     // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize; // we need to increase the size
@@ -154,7 +154,8 @@ bool AddrSpace::Load(char *fileName)
         PageIndex++;
 
         int InitDataPageIndex = PageIndex;
-        while ((PageIndex + 1) * PageSize < noffH.code.size + noffH.initData.size)
+        // while ((PageIndex + 1) * PageSize < noffH.code.size + noffH.initData.size)
+        while (PageIndex < numPages)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
             // printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
@@ -163,16 +164,16 @@ bool AddrSpace::Load(char *fileName)
 
         // cout << "test, NewOffset = " << offset << endl;
 
-        PutInPageTableWithOffset2(PageIndex, executable, pageTable, noffH.initData.inFileAddr + PageSize - offset, noffH.code.inFileAddr, offset, PageIndex - InitDataPageIndex);
-        PageIndex++;
+        // PutInPageTableWithOffset2(PageIndex, executable, pageTable, noffH.initData.inFileAddr + PageSize - offset, noffH.code.inFileAddr, offset, PageIndex - InitDataPageIndex);
+        // PageIndex++;
 
-        // cout << "test2" << endl;
+        // // cout << "test2" << endl;
 
-        while (PageIndex < numPages)
-        {
-            PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, offset, PageIndex);
-            PageIndex++;
-        }
+        // while (PageIndex < numPages)
+        // {
+        //     PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, offset, PageIndex);
+        //     PageIndex++;
+        // }
     }
 
     // if (noffH.code.size > 0)
