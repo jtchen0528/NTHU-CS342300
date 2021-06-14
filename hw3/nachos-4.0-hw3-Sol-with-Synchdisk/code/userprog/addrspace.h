@@ -44,7 +44,6 @@ private:
                              // return false if not found
   void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start);
   void PutInPageTableWithOffset(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset);
-  void PutInPageTableLast(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start, int offset);
 
   char *concat(const char *s1, const char *s2, int offset);
 
