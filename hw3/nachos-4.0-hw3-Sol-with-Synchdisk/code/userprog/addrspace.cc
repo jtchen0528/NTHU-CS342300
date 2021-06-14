@@ -142,7 +142,7 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.initData.size == 0)
     {
-        while (PageIndex * PageSize < noffH.code.size)
+        while (PageIndex * PageSize < numPages)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0);
             PageIndex++;
@@ -150,7 +150,6 @@ bool AddrSpace::Load(char *fileName)
     }
     else
     {
-
         PutInPageTableWithOffset(PageIndex, executable, pageTable, noffH.code.inFileAddr, noffH.initData.inFileAddr, offset);
         PageIndex++;
 
