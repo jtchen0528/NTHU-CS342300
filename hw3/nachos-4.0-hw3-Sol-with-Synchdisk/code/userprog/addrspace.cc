@@ -157,16 +157,16 @@ bool AddrSpace::Load(char *fileName)
         while ((PageIndex + 1) * PageSize < noffH.code.size + noffH.initData.size)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
-            printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
+            // printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
             PageIndex++;
         }
 
-        cout << "test, NewOffset = " << offset << endl;
+        // cout << "test, NewOffset = " << offset << endl;
 
         PutInPageTableWithOffset2(PageIndex, executable, pageTable, noffH.initData.inFileAddr + PageSize - offset, noffH.code.inFileAddr, offset, PageIndex - InitDataPageIndex);
         PageIndex++;
 
-        cout << "test2" << endl;
+        // cout << "test2" << endl;
 
         while (PageIndex < numPages)
         {
@@ -323,8 +323,8 @@ void AddrSpace::PutInPageTableWithOffset2(int i, OpenFile *executable, Translati
         pageTable[i].reference_bit = FALSE; //for second chance algo.
         executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), offset, Addr + (i_2 * PageSize));
         executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize + offset]), PageSize - offset, Addr2 + (i * PageSize));
-        cout << "first read at: " << j * PageSize << " for " << offset << " bits, at page " << i_2 << endl;
-        cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, at page " << i << endl;
+        // cout << "first read at: " << j * PageSize << " for " << offset << " bits, at page " << i_2 << endl;
+        // cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, at page " << i << endl;
     }
     //Use virtual memory when memory isn't enough
     else
@@ -348,8 +348,8 @@ void AddrSpace::PutInPageTableWithOffset2(int i, OpenFile *executable, Translati
         executable->ReadAt(buf1, offset, Addr + (i_2 * PageSize));
         executable->ReadAt(buf2, PageSize - offset, Addr2 + (i * PageSize));
         buf = concat(buf1, buf2, offset);
-        cout << "first read at: " << j * PageSize << " for " << offset << " bits, at page " << i_2 << endl;
-        cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, at page " << i << endl;
+        // cout << "first read at: " << j * PageSize << " for " << offset << " bits, at page " << i_2 << endl;
+        // cout << "then read at: " << j * PageSize + offset << " for " << PageSize - offset << " bits, at page " << i << endl;
         kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
     }
 }
