@@ -158,6 +158,7 @@ bool AddrSpace::Load(char *fileName)
         {
             PutInPageTable(PageIndex, executable, pageTable, noffH.initData.inFileAddr, PageSize - offset, PageIndex - InitDataPageIndex);
             PageIndex++;
+            printf("Put page %d of InitData + %d at Page %d.\n", PageIndex - InitDataPageIndex, PageSize - offset, PageIndex);
         }
     }
 
