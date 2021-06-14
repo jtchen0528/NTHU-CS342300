@@ -170,7 +170,7 @@ bool AddrSpace::Load(char *fileName)
 
         while (PageIndex < numPages)
         {
-            PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 64, PageIndex);
+            PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, offset, PageIndex);
             PageIndex++;
         }
     }
