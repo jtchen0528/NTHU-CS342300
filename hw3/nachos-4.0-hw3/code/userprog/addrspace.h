@@ -17,7 +17,7 @@
 #include "filesys.h"
 #include <string.h>
 
-#define UserStackSize 1024 // increase this as necessary!
+#define UserStackSize 8192 // increase this as necessary!
 
 class AddrSpace
 {
@@ -30,22 +30,26 @@ public:
 
   void SaveState();    // Save/restore address space-specific
   void RestoreState(); // info on a context switch
-
-  static bool usedPhyPage[NumPhysPages];
-  static bool usedVirPage[NumVirPages];
   int ID;
 
 private:
-  TranslationEntry *pageTable; // Assume linear page table translation
-                               // for now!
-  unsigned int numPages;       // Number of pages in the virtual
-                               // address space
+  TranslationEntry *pageTable;
+
+  // Assume linear page table translation
+  // for now!
+  unsigned int numPages; // Number of pages in the virtual
+                         // address space
 
   bool Load(char *fileName); // Load the program into memory
                              // return false if not found
+  void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start, int i_2);
+  void PutInPageTableWithOffset(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset);
+
+  char *concat(const char *s1, const char *s2, int offset);
 
   void InitRegisters(); // Initialize user-level CPU registers,
                         // before jumping to user code
+  bool pt_is_load;
 };
 
 #endif // ADDRSPACE_H

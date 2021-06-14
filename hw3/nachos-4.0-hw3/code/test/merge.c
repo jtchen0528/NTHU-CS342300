@@ -39,7 +39,7 @@ void merge(int array[], int begin, int end, int temp[])
 int main()
 {
     int temp[1023], i;
-
+    
     merge(array, 0, 1023, temp);
 
     for(i=22; i<27; i++)
