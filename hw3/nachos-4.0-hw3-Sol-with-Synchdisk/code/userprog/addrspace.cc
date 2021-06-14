@@ -131,7 +131,7 @@ bool AddrSpace::Load(char *fileName)
     int PageIndex = 0;
     while (PageIndex * PageSize < noffH.code.size)
     {
-        PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr);
+        PutInPageTable(PageIndex, executable, pageTable, noffH.code.inFileAddr, 0);
         PageIndex++;
     }
 
