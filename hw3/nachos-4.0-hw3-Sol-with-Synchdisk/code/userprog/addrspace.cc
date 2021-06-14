@@ -152,7 +152,7 @@ bool AddrSpace::Load(char *fileName)
     {
         PutInPageTableWithOffset(PageIndex, executable, pageTable, noffH.code.inFileAddr, noffH.initData.inFileAddr, offset);
         PageIndex++;
-        
+
         int InitDataPageIndex = PageIndex;
         while (PageIndex < numPages)
         {
@@ -288,10 +288,9 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
 
 char *AddrSpace::concat(const char *s1, const char *s2, int offset)
 {
-    char *result = new char[PageSize]; // +1 for the null-terminator
-    // in real code you would check for errors in malloc here
+    char *result = new char[PageSize];
     memcpy(result, s1, offset);
-    memcpy(result + offset, s2, PageSize - offset); // +1 to copy the null-terminator
+    memcpy(result + offset, s2, PageSize - offset);
     return result;
 }
 
