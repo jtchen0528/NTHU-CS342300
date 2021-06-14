@@ -157,7 +157,7 @@ bool AddrSpace::Load(char *fileName)
     return TRUE;       // success
 }
 
-void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable)
+void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, NoffHeader noffH)
 {
     int j = 0;
     while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
