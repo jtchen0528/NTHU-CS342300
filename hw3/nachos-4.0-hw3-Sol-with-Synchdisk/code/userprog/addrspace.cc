@@ -140,7 +140,7 @@ bool AddrSpace::Load(char *fileName)
 
         for (unsigned int i = 0; i < numPages; i++)
         {
-            PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable);
+            PutInPageTable(int i, *executable, *pageTable, noffH.code.inFileAddr);
         }
     }
 
@@ -157,7 +157,7 @@ bool AddrSpace::Load(char *fileName)
     return TRUE;       // success
 }
 
-void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, NoffHeader noffH)
+void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr)
 {
     int j = 0;
     while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
@@ -179,7 +179,7 @@ void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pa
         pageTable[i].ID = ID;
         pageTable[i].count++;               //for LRU,count+1 when save in memory
         pageTable[i].reference_bit = FALSE; //for second chance algo.
-        executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
+        executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, Addr + (i * PageSize));
     }
     //Use virtual memory when memory isn't enough
     else
@@ -199,7 +199,7 @@ void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pa
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;
         pageTable[i].ID = ID;
-        executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + (i * PageSize));
+        executable->ReadAt(buf, PageSize, Addr + (i * PageSize));
         kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
     }
 }
