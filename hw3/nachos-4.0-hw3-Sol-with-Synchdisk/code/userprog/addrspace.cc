@@ -140,7 +140,7 @@ bool AddrSpace::Load(char *fileName)
 
         for (unsigned int i = 0; i < numPages; i++)
         {
-            PutInPageTable(int i, *executable, *pageTable, noffH.code.inFileAddr);
+            PutInPageTable(i, *executable, *pageTable, noffH.code.inFileAddr);
         }
     }
 
