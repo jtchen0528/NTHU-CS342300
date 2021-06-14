@@ -17,7 +17,7 @@
 #include "filesys.h"
 #include <string.h>
 
-#define UserStackSize 4096 // increase this as necessary!
+#define UserStackSize 8192 // increase this as necessary!
 
 class AddrSpace
 {
