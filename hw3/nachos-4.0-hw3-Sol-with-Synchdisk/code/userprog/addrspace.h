@@ -42,7 +42,7 @@ private:
 
   bool Load(char *fileName); // Load the program into memory
                              // return false if not found
-  void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable);
+  void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, NoffHeader noffH);
 
   void InitRegisters(); // Initialize user-level CPU registers,
       // before jumping to user code
