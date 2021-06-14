@@ -42,10 +42,13 @@ private:
 
   bool Load(char *fileName); // Load the program into memory
                              // return false if not found
-  void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr);
+  void PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start);
+  void PutInPageTableWithOffset(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset);
+
+  char *concat(const char *s1, const char *s2, int offset);
 
   void InitRegisters(); // Initialize user-level CPU registers,
-      // before jumping to user code
+                        // before jumping to user code
   bool pt_is_load;
 };
 
