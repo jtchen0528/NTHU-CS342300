@@ -190,7 +190,7 @@ bool AddrSpace::Load(char *fileName)
 
 void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Start, int i_2)
 {
-    int j = 0;
+/*    int j = 0;
     while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
     {
         j++;
@@ -215,7 +215,7 @@ void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pa
     //Use virtual memory when memory isn't enough
     else
     {
-        char *buf;
+ */       char *buf;
         buf = new char[PageSize];
         int k = 0;
         while (kernel->machine->usedvirPage[k] != FALSE)
@@ -230,14 +230,16 @@ void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pa
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;
         pageTable[i].ID = ID;
+        pageTable[i].count = 0;
+        pageTable[i].reference_bit = true;
         executable->ReadAt(buf, PageSize, Start + Addr + (i_2 * PageSize));
         kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
-    }
+//    }
 }
 
 void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset)
 {
-    int j = 0;
+/*    int j = 0;
     while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
     {
         j++;
@@ -265,7 +267,7 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
     //Use virtual memory when memory isn't enough
     else
     {
-        char *buf, *buf1, *buf2;
+*/        char *buf, *buf1, *buf2;
         buf1 = new char[offset];
         buf2 = new char[PageSize - offset];
         int k = 0;
@@ -281,11 +283,13 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;
         pageTable[i].ID = ID;
+        pageTable[i].count = 0;
+        pageTable[i].reference_bit = true;
         executable->ReadAt(buf1, offset, Addr + (i * PageSize));
         executable->ReadAt(buf2, PageSize - offset, Addr2);
         buf = concat(buf1, buf2, offset);
         kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
-    }
+//    }
 }
 
 char *AddrSpace::concat(const char *s1, const char *s2, int offset)

@@ -70,6 +70,13 @@ Machine::Machine(bool debug)
     tlb = NULL;
     pageTable = NULL;
 #endif
+	for (i = 0; i < NumPhysPages; i++) {
+		usedPhyPage[i] = false;
+	}
+
+	for (i = 0; i < NumVirPages; i++) {
+		usedvirPage[i] = false;
+	}
 
     singleStep = debug;
     CheckEndian();
