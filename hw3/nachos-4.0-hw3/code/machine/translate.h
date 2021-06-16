@@ -40,7 +40,9 @@ class TranslationEntry {
 		 	// page is referenced or modified.
     bool dirty;         // This bit is set by the hardware every time the
 		             	// page is modified.
-    int count;    //for LRU
+    int count;    //for LFU
+
+    int demand_time;
     
     bool reference_bit; //for second chance algo.
    

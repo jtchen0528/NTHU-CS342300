@@ -244,8 +244,10 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 kernel->machine->main_tab[j] = &pageTable[vpn];
                 pageTable[vpn].physicalPage = j;
                 pageTable[vpn].valid = TRUE;
-                pageTable[vpn].count++; //for LRU
-                // pageTable[vpn].reference_bit = FALSE; //for second chance algo.
+                pageTable[vpn].count++; //for LFU
+                pageTable[vpn].reference_bit = FALSE; //for second chance algo.
+                pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
+
 
                 kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
                 bcopy(buf, &mainMemory[j * PageSize], PageSize);
@@ -258,13 +260,14 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
-                victim = (rand() % 32);
+                // victim = (rand() % 32);
 
                 //Fifo
                 // victim = fifo%32;
 
-                //LRU / LFU?
-                int min = main_tab[0]->count;//pageTable[0].count;
+                //LFU
+                /*
+                int min = main_tab[0]->count;
                 victim = 0;
                 for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
                 {
@@ -274,7 +277,19 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-                //main_tab[victim].count++;
+                */
+                // LRU
+                int min = main_tab[0]->demand_time;
+                victim = 0;
+                
+                for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
+                {
+                    if (min > main_tab[tab_count]->demand_time)
+                    {
+                        min = main_tab[tab_count]->demand_time;
+                        victim = tab_count;
+                    }
+                }
 
                 //Second chance
                 /* 
@@ -302,7 +317,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 pageTable[vpn].valid = TRUE;
                 pageTable[vpn].physicalPage = victim;
-                pageTable[vpn].count++;
+                
+                pageTable[vpn].count++;   // for LFU
+                
+                pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
+
                 kernel->machine->PhyPageName[victim] = pageTable[vpn].ID;
                 main_tab[victim] = &pageTable[vpn];
                 // fifo = fifo + 1;               //for fifo
