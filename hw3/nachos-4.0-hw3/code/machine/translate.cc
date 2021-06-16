@@ -251,7 +251,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 pageTable[vpn].physicalPage = j;
                 pageTable[vpn].valid = TRUE;
                 pageTable[vpn].count++; //for LFU
-                pageTable[vpn].reference_bit = FALSE; //for second chance algo.
+                pageTable[vpn].reference_bit = true; //for second chance algo.
                 pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
 
 
@@ -266,13 +266,13 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
-                // victim = (rand() % 32);
+                // victim = (rand() % NumPhysPages);
 
                 //Fifo
-                // victim = fifo%32;
+                // victim = fifo % NumPhysPages;
 
                 //LFU
-                
+                /*
                 int min = main_tab[0]->count;
                 victim = 0;
                 for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
@@ -283,9 +283,9 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-                
+                */
                 // LRU
-                /*
+                
                 int min = main_tab[0]->demand_time;
                 victim = 0;
                 
@@ -297,15 +297,18 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-                */
+                
                 //Second chance
-                /* 
-                     victim = fifo % 32;
-                     while(pageTable[victim].reference_bit == true)
-                                  fifo++;      //find reference_bit is FALSE,and it can be replaced
-                    
-                     pageTable[victim].reference_bit = true;        //not be replaced
-                     */
+                /*
+                victim = fifo % NumPhysPages;
+                while(pageTable[victim].reference_bit == true) {
+                    pageTable[victim].reference_bit = false;
+                    fifo++;      //find reference_bit is FALSE
+                    victim = fifo % NumPhysPages;
+                }    
+
+                pageTable[victim].reference_bit = true;        // be replaced
+                */  
 
                 // printf("Number = %d page swap out\n", victim);
 
@@ -331,7 +334,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 kernel->machine->PhyPageName[victim] = pageTable[vpn].ID;
                 main_tab[victim] = &pageTable[vpn];
-                // fifo = fifo + 1;               //for fifo
+                fifo = fifo + 1;               //for fifo
                 // printf("page replacement finished\n");
             }
 
