@@ -32,11 +32,26 @@ public:
   void RestoreState(); // info on a context switch
   int ID;
 
+  void reset_VirPages() {
+        
+    for (int page_i = 0; page_i < numPages; page_i++) {
+        // pageTable[page_i].valid = FALSE;   //not load in main_memory
+        // pageTable[page_i].use = FALSE;
+        // pageTable[page_i].dirty = FALSE;
+        // pageTable[page_i].readOnly = FALSE;                    
+        pageTable[page_i].count = 0;   //for LFU
+        pageTable[page_i].reference_bit = true; //for second chance algo.
+        pageTable[page_i].demand_time = 0;
+    }
+      
+  };
+
 private:
   TranslationEntry *pageTable;
 
   // Assume linear page table translation
   // for now!
+  
   unsigned int numPages; // Number of pages in the virtual
                          // address space
 

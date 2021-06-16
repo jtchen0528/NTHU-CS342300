@@ -227,6 +227,12 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             //hanle page fault
             // DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             kernel->stats->numPageFaults++;
+
+            // periodic reset
+            if (kernel->stats->numPageFaults % 128 == 0) {    
+                kernel->currentThread->space->reset_VirPages();
+            }
+            
             j = 0;
             while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
             {
@@ -266,7 +272,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 // victim = fifo%32;
 
                 //LFU
-                /*
+                
                 int min = main_tab[0]->count;
                 victim = 0;
                 for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
@@ -277,8 +283,9 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-                */
+                
                 // LRU
+                /*
                 int min = main_tab[0]->demand_time;
                 victim = 0;
                 
@@ -290,7 +297,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-
+                */
                 //Second chance
                 /* 
                      victim = fifo % 32;
