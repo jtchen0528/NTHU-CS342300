@@ -263,18 +263,18 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 //Fifo
                 // victim = fifo%32;
 
-                //LRU
-                int min = pageTable[0].count;
+                //LRU / LFU?
+                int min = main_tab[0]->count;//pageTable[0].count;
                 victim = 0;
-                for (int ccount = 0; ccount < 32; ccount++)
+                for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
                 {
-                    if (min > pageTable[ccount].count)
+                    if (min > main_tab[tab_count]->count)
                     {
-                        min = pageTable[ccount].count;
-                        victim = ccount;
+                        min = main_tab[tab_count]->count;
+                        victim = tab_count;
                     }
                 }
-                pageTable[victim].count++;
+                //main_tab[victim].count++;
 
                 //Second chance
                 /* 
@@ -302,6 +302,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 pageTable[vpn].valid = TRUE;
                 pageTable[vpn].physicalPage = victim;
+                pageTable[vpn].count++;
                 kernel->machine->PhyPageName[victim] = pageTable[vpn].ID;
                 main_tab[victim] = &pageTable[vpn];
                 // fifo = fifo + 1;               //for fifo
