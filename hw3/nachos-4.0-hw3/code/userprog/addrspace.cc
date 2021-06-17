@@ -208,7 +208,10 @@ void AddrSpace::PutInPageTable(int i, OpenFile *executable, TranslationEntry *pa
         pageTable[i].count = 0;
         pageTable[i].reference_bit = true;
         executable->ReadAt(buf, PageSize, Start + Addr + (i_2 * PageSize));
-        kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+        // printf("enter writeat\n");
+        kernel->vm_file->WriteAt(buf, PageSize, k * PageSize);
+        // printf("pass putintable\n");
+        // kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
 }
 
 void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, TranslationEntry *pageTable, int Addr, int Addr2, int offset)
@@ -234,7 +237,8 @@ void AddrSpace::PutInPageTableWithOffset(int i, OpenFile *executable, Translatio
         executable->ReadAt(buf1, offset, Addr + (i * PageSize));
         executable->ReadAt(buf2, PageSize - offset, Addr2);
         buf = concat(buf1, buf2, offset);
-        kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
+        kernel->vm_file->WriteAt(buf, PageSize, k * PageSize);
+        // kernel->vm_Disk->WriteSector(k, buf); //call virtual_disk write in virtual memory
 }
 
 char *AddrSpace::concat(const char *s1, const char *s2, int offset)

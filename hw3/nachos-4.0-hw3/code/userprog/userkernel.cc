@@ -59,6 +59,9 @@ UserProgKernel::Initialize()
     machine = new Machine(debugUserProg);
     fileSystem = new FileSystem();
     vm_Disk = new SynchDisk("New Disk");//to save the page which the main memoey don't have enough memory to save
+    ASSERT(fileSystem->Create("VMFILE"));
+    vm_file = fileSystem->Open("VMFILE");
+    //printf("pass vm file open\n");
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif // FILESYS

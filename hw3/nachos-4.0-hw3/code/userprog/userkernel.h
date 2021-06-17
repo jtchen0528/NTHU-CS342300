@@ -30,6 +30,7 @@ class UserProgKernel : public ThreadedKernel {
     void SelfTest();		// test whether kernel is working
     
     SynchDisk *vm_Disk;     //to save the page which the main memoey don't have enough memory to save
+    OpenFile *vm_file;
 // These are public for notational convenience.
     Machine *machine;
     FileSystem *fileSystem;

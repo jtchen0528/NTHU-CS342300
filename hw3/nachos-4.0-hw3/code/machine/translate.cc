@@ -193,7 +193,10 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     unsigned int pageFrame;
 
     int victim; ///find the page victim
-    int fifo;   //For fifo
+    static int fifo;   //For fifo
+    
+    static int access_time = 0;
+    access_time++;
 
     unsigned int j;
 
@@ -229,10 +232,12 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             kernel->stats->numPageFaults++;
 
             // periodic reset
+            
             if (kernel->stats->numPageFaults % 128 == 0) {    
                 kernel->currentThread->space->reset_VirPages();
             }
             
+
             j = 0;
             while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
             {
@@ -254,8 +259,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 pageTable[vpn].reference_bit = true; //for second chance algo.
                 pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
 
-
-                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
+                kernel->vm_file->ReadAt(buf, PageSize, PageSize * pageTable[vpn].virtualPage);
+                // kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf);
                 bcopy(buf, &mainMemory[j * PageSize], PageSize);
             }
             else
@@ -266,14 +271,14 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
-                // victim = (rand() % NumPhysPages);
+                victim = (rand() % NumPhysPages);
 
                 //Fifo
                 // victim = fifo % NumPhysPages;
 
                 //LFU
                 /*
-                int min = main_tab[0]->count;
+                unsigned int min = main_tab[0]->count;
                 victim = 0;
                 for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
                 {
@@ -285,7 +290,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 }
                 */
                 // LRU
-                
+                /*
                 int min = main_tab[0]->demand_time;
                 victim = 0;
                 
@@ -297,7 +302,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         victim = tab_count;
                     }
                 }
-                
+                */
                 //Second chance
                 /*
                 victim = fifo % NumPhysPages;
@@ -306,7 +311,6 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                     fifo++;      //find reference_bit is FALSE
                     victim = fifo % NumPhysPages;
                 }    
-
                 pageTable[victim].reference_bit = true;        // be replaced
                 */  
 
@@ -316,9 +320,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
                 //get the page victm and save in the disk
                 bcopy(&mainMemory[victim * PageSize], buf_1, PageSize);
-                kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf_2);
+                kernel->vm_file->ReadAt(buf_2, PageSize, PageSize * pageTable[vpn].virtualPage);
+                // kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf_2);
                 bcopy(buf_2, &mainMemory[victim * PageSize], PageSize);
-                kernel->vm_Disk->WriteSector(pageTable[vpn].virtualPage, buf_1);
+                kernel->vm_file->WriteAt(buf_1, PageSize, PageSize * pageTable[vpn].virtualPage);
+                // kernel->vm_Disk->WriteSector(pageTable[vpn].virtualPage, buf_1);
 
                 main_tab[victim]->virtualPage = pageTable[vpn].virtualPage;
                 main_tab[victim]->valid = FALSE;
@@ -329,7 +335,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 pageTable[vpn].physicalPage = victim;
                 
                 pageTable[vpn].count++;   // for LFU
-                
+                // // main_tab[victim]->count = 0; // for LFU
+
                 pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
 
                 kernel->machine->PhyPageName[victim] = pageTable[vpn].ID;
@@ -339,7 +346,21 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             }
 
             //return PageFaultException;
+        } else if (pageTable[vpn].valid) {
+            /*if (pageTable[vpn].count <1000) {
+                pageTable[vpn].count++;
+            }*/
+                        
+            pageTable[vpn].demand_time = kernel->stats->totalTicks;
+            pageTable[vpn].reference_bit = true;
+            // printf("page access count: %d", pageTable[vpn].count);
         }
+        /*
+        if (access_time == 50000) {
+            access_time = 0;    
+            kernel->currentThread->space->reset_VirPages();
+        }
+        */
         entry = &pageTable[vpn];
     }
     else
