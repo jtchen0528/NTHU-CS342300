@@ -40,8 +40,8 @@ public:
         // pageTable[page_i].dirty = FALSE;
         // pageTable[page_i].readOnly = FALSE;                    
         pageTable[page_i].count = 0;   //for LFU
-        pageTable[page_i].reference_bit = true; //for second chance algo.
-        pageTable[page_i].demand_time = 0;
+        // pageTable[page_i].reference_bit = true; //for second chance algo.
+        // pageTable[page_i].demand_time = 0;
     }
       
   };

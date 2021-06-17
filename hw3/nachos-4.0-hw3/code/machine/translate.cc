@@ -194,7 +194,14 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
     int victim; ///find the page victim
     static int fifo;   //For fifo
-    
+    /*
+    static unsigned int ticks = 0;
+    ticks++;
+    if (ticks % 100000 == 0) {
+        printf("ticks:%u\n", ticks); 
+        printf("sys ticks:%d\n", kernel->stats->totalTicks);
+    }
+    */
     static int access_time = 0;
     access_time++;
 
@@ -206,6 +213,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
     if (((size == 4) && (virtAddr & 0x3)) || ((size == 2) && (virtAddr & 0x1)))
     {
         DEBUG(dbgAddr, "Alignment problem at " << virtAddr << ", size " << size);
+        printf("Alignment problem Vaddr: %d size: %d\n", virtAddr, size);
         return AddressErrorException;
     }
 
@@ -223,6 +231,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
         if (vpn >= pageTableSize)
         {
             DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
+            printf("pageTable: %d vpn: %d\n", pageTableSize, vpn);
             return AddressErrorException;
         }
         else if (!pageTable[vpn].valid)
@@ -231,12 +240,17 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
             // DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             kernel->stats->numPageFaults++;
 
-            // periodic reset
+            // if (kernel->stats->numPageFaults < 2400)
+               // printf("page fault : %d\n",kernel->stats->numPageFaults);
             
+            // printf("ID:%d\n", pageTable[vpn].ID);
+            
+            // periodic reset
+            /*
             if (kernel->stats->numPageFaults % 128 == 0) {    
                 kernel->currentThread->space->reset_VirPages();
             }
-            
+            */
 
             j = 0;
             while (kernel->machine->usedPhyPage[j] != FALSE && j < NumPhysPages)
@@ -251,7 +265,6 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf = new char[PageSize];
                 kernel->machine->usedPhyPage[j] = TRUE;
                 kernel->machine->PhyPageName[j] = pageTable[vpn].ID;
-
                 kernel->machine->main_tab[j] = &pageTable[vpn];
                 pageTable[vpn].physicalPage = j;
                 pageTable[vpn].valid = TRUE;
@@ -271,38 +284,39 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
+                /*
                 victim = (rand() % NumPhysPages);
-
+                */
                 //Fifo
                 // victim = fifo % NumPhysPages;
 
-                //LFU
-                /*
-                unsigned int min = main_tab[0]->count;
-                victim = 0;
-                for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
-                {
-                    if (min > main_tab[tab_count]->count)
-                    {
-                        min = main_tab[tab_count]->count;
-                        victim = tab_count;
-                    }
-                }
-                */
-                // LRU
-                /*
-                int min = main_tab[0]->demand_time;
-                victim = 0;
                 
-                for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
-                {
-                    if (min > main_tab[tab_count]->demand_time)
+                if (kernel->stats->numPageFaults >2040) {
+                    // LFU
+                    unsigned int min = main_tab[0]->count;
+                    victim = 0;
+                    for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
                     {
-                        min = main_tab[tab_count]->demand_time;
-                        victim = tab_count;
+                        if (min > main_tab[tab_count]->count)
+                        {
+                            min = main_tab[tab_count]->count;
+                            victim = tab_count;
+                        }
+                    }
+                } else {
+                    // LRU
+                    int min = main_tab[0]->demand_time;
+                    victim = 0;
+                
+                    for (int tab_count = 0; tab_count < NumPhysPages; tab_count++)
+                    {
+                        if (min > main_tab[tab_count]->demand_time)
+                        {
+                            min = main_tab[tab_count]->demand_time;
+                            victim = tab_count;
+                        }
                     }
                 }
-                */
                 //Second chance
                 /*
                 victim = fifo % NumPhysPages;
@@ -347,20 +361,21 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 
             //return PageFaultException;
         } else if (pageTable[vpn].valid) {
-            /*if (pageTable[vpn].count <1000) {
-                pageTable[vpn].count++;
-            }*/
+            //if (pageTable[vpn].count <10000) {
+            //    pageTable[vpn].count++;
+            //}
                         
+            pageTable[vpn].count++;
             pageTable[vpn].demand_time = kernel->stats->totalTicks;
             pageTable[vpn].reference_bit = true;
             // printf("page access count: %d", pageTable[vpn].count);
         }
-        /*
-        if (access_time == 50000) {
+        // periodic reset LFU
+        if (access_time == 1000) {
             access_time = 0;    
             kernel->currentThread->space->reset_VirPages();
         }
-        */
+        
         entry = &pageTable[vpn];
     }
     else

@@ -42,7 +42,7 @@ class TranslationEntry {
 		             	// page is modified.
     unsigned int count;    //for LFU
 
-    int demand_time;
+    unsigned int demand_time; // for LRU
     
     bool reference_bit; //for second chance algo.
    

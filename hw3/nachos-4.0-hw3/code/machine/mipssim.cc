@@ -125,7 +125,7 @@ Machine::OneInstruction(Instruction *instr)
 	return;			// exception occurred
     instr->value = raw;
     instr->Decode();
-
+    // printf("pass ReadMem\n");
     if (debug->IsEnabled('m')) {
         struct OpString *str = &opStrings[instr->opCode];
 	char buf[80];
