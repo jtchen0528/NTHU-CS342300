@@ -268,6 +268,7 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 kernel->machine->main_tab[j] = &pageTable[vpn];
                 pageTable[vpn].physicalPage = j;
                 pageTable[vpn].valid = TRUE;
+                pageTable[vpn].dirty = false;
                 pageTable[vpn].count++; //for LFU
                 pageTable[vpn].reference_bit = true; //for second chance algo.
                 pageTable[vpn].demand_time = kernel->stats->totalTicks; // for LRU
@@ -284,9 +285,9 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 buf_2 = new char[PageSize];
 
                 //Random
-                /*
-                victim = (rand() % NumPhysPages);
-                */
+                
+                // victim = (rand() % NumPhysPages);
+                
                 //Fifo
                 // victim = fifo % NumPhysPages;
 
@@ -317,6 +318,8 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                         }
                     }
                 }
+                
+
                 //Second chance
                 /*
                 victim = fifo % NumPhysPages;
@@ -337,10 +340,11 @@ Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
                 kernel->vm_file->ReadAt(buf_2, PageSize, PageSize * pageTable[vpn].virtualPage);
                 // kernel->vm_Disk->ReadSector(pageTable[vpn].virtualPage, buf_2);
                 bcopy(buf_2, &mainMemory[victim * PageSize], PageSize);
-                kernel->vm_file->WriteAt(buf_1, PageSize, PageSize * pageTable[vpn].virtualPage);
+                if (main_tab[victim]->dirty)
+                    kernel->vm_file->WriteAt(buf_1, PageSize, PageSize * main_tab[victim]->virtualPage);
                 // kernel->vm_Disk->WriteSector(pageTable[vpn].virtualPage, buf_1);
 
-                main_tab[victim]->virtualPage = pageTable[vpn].virtualPage;
+                // main_tab[victim]->virtualPage = pageTable[vpn].virtualPage;
                 main_tab[victim]->valid = FALSE;
 
                 //save the page into the main memory
